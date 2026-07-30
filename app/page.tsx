@@ -1,45 +1,34 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 
 const DONATION_URL = "#donate";
-const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED = 0;
+const FUNDRAISING_TARGET: number = 3000;
+const AMOUNT_RAISED: number = 0;
 const TRAINER_COUNT = 10;
 
-const courseStops = [
-  { label: "Greenwich", x: 842, y: 462 },
-  { label: "Cutty Sark", x: 688, y: 392 },
-  { label: "Tower Bridge", x: 430, y: 256 },
-  { label: "Canary Wharf", x: 622, y: 300 },
-  { label: "Tower Hill", x: 390, y: 226 },
-  { label: "The Mall", x: 132, y: 178 },
+type Particle = {
+  x: number;
+  y: number;
+  radius: number;
+  speedX: number;
+  speedY: number;
+  drift: number;
+  colour: string;
+  alpha: number;
+};
+
+const particleColours = [
+  "#f2a1b8",
+  "#f06f72",
+  "#dff3bd",
+  "#8c79ca",
+  "#fffdf7",
+  "#08b875",
 ];
 
-function Flower({
-  className = "",
-  tone = "coral",
-}: {
-  className?: string;
-  tone?: "coral" | "purple" | "cream";
-}) {
-  return (
-    <div className={`flower flower--${tone} ${className}`} aria-hidden="true">
-      <div className="flower__spin">
-        {Array.from({ length: 8 }, (_, index) => (
-          <span
-            className="flower__petal"
-            key={index}
-            style={{ "--petal": index } as React.CSSProperties}
-          />
-        ))}
-        <span className="flower__centre" />
-      </div>
-    </div>
-  );
-}
-
-function RouteMap() {
+function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -49,132 +38,336 @@ function RouteMap() {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    let frame = 0;
-    let animationId = 0;
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const pointer = { x: -1000, y: -1000 };
+    let particles: Particle[] = [];
+    let animationId = 0;
+    let width = 0;
+    let height = 0;
 
-    const draw = () => {
-      const box = canvas.getBoundingClientRect();
+    const createParticle = (): Particle => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: 2 + Math.random() * 10,
+      speedX: (Math.random() - 0.5) * 0.22,
+      speedY: -0.08 - Math.random() * 0.26,
+      drift: Math.random() * Math.PI * 2,
+      colour:
+        particleColours[
+          Math.floor(Math.random() * particleColours.length)
+        ],
+      alpha: 0.12 + Math.random() * 0.22,
+    });
+
+    const resize = () => {
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(box.width * ratio));
-      canvas.height = Math.max(1, Math.round(box.height * ratio));
-      context.setTransform(
-        (box.width * ratio) / 1000,
-        0,
-        0,
-        (box.height * ratio) / 600,
-        0,
-        0,
-      );
-      context.clearRect(0, 0, 1000, 600);
-
-      context.fillStyle = "#f7f0df";
-      context.fillRect(0, 0, 1000, 600);
-
-      context.lineWidth = 1;
-      context.strokeStyle = "rgba(32, 91, 68, 0.13)";
-      for (let x = -100; x < 1100; x += 62) {
-        context.beginPath();
-        context.moveTo(x, 0);
-        context.lineTo(x + 190, 600);
-        context.stroke();
-      }
-      for (let y = 28; y < 620; y += 54) {
-        context.beginPath();
-        context.moveTo(0, y);
-        context.bezierCurveTo(240, y - 28, 720, y + 34, 1000, y - 12);
-        context.stroke();
-      }
-
-      context.lineCap = "round";
-      context.lineJoin = "round";
-      context.strokeStyle = "#bfe2e6";
-      context.lineWidth = 54;
-      context.beginPath();
-      context.moveTo(35, 220);
-      context.bezierCurveTo(210, 160, 310, 312, 450, 280);
-      context.bezierCurveTo(570, 252, 590, 394, 724, 364);
-      context.bezierCurveTo(830, 340, 882, 286, 984, 300);
-      context.stroke();
-
-      const drawRoute = (stroke: string, width: number, dashed = false) => {
-        context.strokeStyle = stroke;
-        context.lineWidth = width;
-        context.setLineDash(dashed ? [16, 16] : []);
-        context.lineDashOffset = dashed ? -frame * 0.6 : 0;
-        context.beginPath();
-        context.moveTo(850, 470);
-        context.bezierCurveTo(795, 445, 730, 440, 686, 394);
-        context.bezierCurveTo(640, 345, 585, 330, 535, 335);
-        context.bezierCurveTo(492, 340, 464, 300, 430, 258);
-        context.bezierCurveTo(485, 225, 568, 225, 616, 268);
-        context.bezierCurveTo(658, 307, 670, 352, 638, 374);
-        context.bezierCurveTo(590, 404, 548, 320, 518, 268);
-        context.bezierCurveTo(486, 215, 430, 202, 388, 226);
-        context.bezierCurveTo(318, 264, 252, 224, 202, 210);
-        context.bezierCurveTo(170, 202, 150, 190, 130, 178);
-        context.stroke();
-      };
-
-      drawRoute("rgba(240, 111, 114, 0.22)", 26);
-      drawRoute("#f06f72", 11);
-      drawRoute("#fff7ed", 3, true);
-      context.setLineDash([]);
-
-      courseStops.forEach((stop, index) => {
-        const pulse =
-          reduceMotion || index !== 0
-            ? 0
-            : 3 + Math.sin(frame * 0.05) * 2;
-        context.fillStyle = "rgba(59, 39, 140, 0.12)";
-        context.beginPath();
-        context.arc(stop.x, stop.y, 13 + pulse, 0, Math.PI * 2);
-        context.fill();
-        context.fillStyle = "#3b278c";
-        context.beginPath();
-        context.arc(stop.x, stop.y, 7, 0, Math.PI * 2);
-        context.fill();
-        context.font = "700 17px Arial, sans-serif";
-        context.fillText(stop.label, stop.x + 14, stop.y - 12);
-      });
-
-      context.fillStyle = "#205b44";
-      context.font = "700 13px Arial, sans-serif";
-      context.fillText("RIVER THAMES", 474, 312);
-      context.fillStyle = "#f06f72";
-      context.font = "800 14px Arial, sans-serif";
-      context.fillText("START", 862, 484);
-      context.fillStyle = "#205b44";
-      context.fillText("FINISH", 58, 182);
-
-      if (!reduceMotion) {
-        frame += 1;
-        animationId = requestAnimationFrame(draw);
-      }
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const desiredCount = Math.max(18, Math.min(42, Math.round(width / 38)));
+      particles = Array.from({ length: desiredCount }, createParticle);
     };
 
+    const draw = (time = 0) => {
+      context.clearRect(0, 0, width, height);
+
+      particles.forEach((particle) => {
+        if (!reduceMotion) {
+          particle.drift += 0.004;
+          particle.x += particle.speedX + Math.sin(particle.drift) * 0.08;
+          particle.y += particle.speedY;
+
+          const distanceX = particle.x - pointer.x;
+          const distanceY = particle.y - pointer.y;
+          const distance = Math.hypot(distanceX, distanceY);
+          if (distance < 100 && distance > 0) {
+            particle.x += (distanceX / distance) * 0.45;
+            particle.y += (distanceY / distance) * 0.45;
+          }
+
+          if (particle.y < -particle.radius * 2) {
+            particle.y = height + particle.radius * 2;
+            particle.x = Math.random() * width;
+          }
+          if (particle.x < -30) particle.x = width + 30;
+          if (particle.x > width + 30) particle.x = -30;
+        }
+
+        const pulse = reduceMotion
+          ? 1
+          : 0.88 + Math.sin(time * 0.0006 + particle.drift) * 0.12;
+        context.beginPath();
+        context.fillStyle = particle.colour;
+        context.globalAlpha = particle.alpha * pulse;
+        context.arc(
+          particle.x,
+          particle.y,
+          particle.radius * pulse,
+          0,
+          Math.PI * 2,
+        );
+        context.fill();
+      });
+
+      context.globalAlpha = 1;
+      if (!reduceMotion) animationId = requestAnimationFrame(draw);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+    };
+
+    const onPointerLeave = () => {
+      pointer.x = -1000;
+      pointer.y = -1000;
+    };
+
+    resize();
     draw();
-    const observer = new ResizeObserver(draw);
-    observer.observe(canvas);
+    window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onPointerLeave);
 
     return () => {
       cancelAnimationFrame(animationId);
-      observer.disconnect();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.documentElement.removeEventListener(
+        "pointerleave",
+        onPointerLeave,
+      );
+    };
+  }, []);
+
+  return <canvas className="particle-field" ref={canvasRef} aria-hidden="true" />;
+}
+
+const startRoutes: [number, number][][] = [
+  [
+    [51.4764, -0.003],
+    [51.4746, 0.007],
+    [51.4714, 0.018],
+    [51.479, 0.039],
+    [51.4896, 0.066],
+  ],
+  [
+    [51.472, -0.008],
+    [51.4712, 0.004],
+    [51.4714, 0.018],
+    [51.479, 0.039],
+    [51.4896, 0.066],
+  ],
+  [
+    [51.4689, -0.014],
+    [51.4699, 0.002],
+    [51.4714, 0.018],
+    [51.479, 0.039],
+    [51.4896, 0.066],
+  ],
+];
+
+const marathonRoute: [number, number][] = [
+  [51.4896, 0.066],
+  [51.4892, 0.055],
+  [51.4868, 0.042],
+  [51.4842, 0.029],
+  [51.4824, 0.015],
+  [51.4828, 0.001],
+  [51.4834, -0.008],
+  [51.4814, -0.011],
+  [51.4798, -0.008],
+  [51.4825, -0.004],
+  [51.4812, -0.019],
+  [51.4817, -0.032],
+  [51.4864, -0.045],
+  [51.4931, -0.052],
+  [51.5009, -0.055],
+  [51.5067, -0.049],
+  [51.5087, -0.038],
+  [51.5055, -0.029],
+  [51.4997, -0.033],
+  [51.4952, -0.043],
+  [51.492, -0.052],
+  [51.4968, -0.057],
+  [51.4991, -0.064],
+  [51.5012, -0.07],
+  [51.5034, -0.074],
+  [51.5055, -0.0754],
+  [51.5102, -0.075],
+  [51.5106, -0.064],
+  [51.5101, -0.052],
+  [51.5104, -0.04],
+  [51.5108, -0.028],
+  [51.5076, -0.022],
+  [51.5026, -0.021],
+  [51.4962, -0.016],
+  [51.4898, -0.011],
+  [51.4867, -0.007],
+  [51.491, -0.002],
+  [51.4983, -0.003],
+  [51.5034, -0.011],
+  [51.5053, -0.018],
+  [51.5031, -0.021],
+  [51.5009, -0.017],
+  [51.5035, -0.012],
+  [51.5076, -0.022],
+  [51.5104, -0.04],
+  [51.5105, -0.055],
+  [51.5102, -0.075],
+  [51.5092, -0.091],
+  [51.509, -0.106],
+  [51.5077, -0.118],
+  [51.5027, -0.123],
+  [51.5008, -0.126],
+  [51.5009, -0.132],
+  [51.5014, -0.137],
+  [51.5019, -0.141],
+  [51.5031, -0.139],
+  [51.5038, -0.134],
+];
+
+const routeLandmarks: {
+  label: string;
+  position: [number, number];
+  direction?: "top" | "bottom" | "left" | "right";
+}[] = [
+  { label: "Three starts", position: [51.473, 0.002], direction: "left" },
+  { label: "Woolwich", position: [51.4896, 0.066], direction: "right" },
+  { label: "Cutty Sark", position: [51.4814, -0.011], direction: "bottom" },
+  { label: "Tower Bridge", position: [51.5076, -0.0752], direction: "left" },
+  { label: "Canary Wharf", position: [51.5035, -0.016], direction: "right" },
+  { label: "Tower Hill", position: [51.5102, -0.075], direction: "top" },
+  { label: "The Mall", position: [51.5038, -0.134], direction: "left" },
+];
+
+function RouteMap() {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = mapRef.current;
+    if (!container) return;
+
+    let removeMap: (() => void) | undefined;
+    let cancelled = false;
+
+    const setup = async () => {
+      const L = await import("leaflet");
+      if (cancelled) return;
+
+      const map = L.map(container, {
+        attributionControl: true,
+        scrollWheelZoom: false,
+        zoomControl: true,
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+      }).addTo(map);
+
+      const routeOutline = L.polyline(marathonRoute, {
+        color: "#fffdf7",
+        opacity: 0.94,
+        weight: 12,
+        lineCap: "round",
+        lineJoin: "round",
+        interactive: false,
+      }).addTo(map);
+
+      startRoutes.forEach((route) => {
+        L.polyline(route, {
+          color: "#fffdf7",
+          opacity: 0.9,
+          weight: 9,
+          lineCap: "round",
+          lineJoin: "round",
+          interactive: false,
+        }).addTo(map);
+        L.polyline(route, {
+          color: "#f06f72",
+          opacity: 0.96,
+          weight: 4,
+          lineCap: "round",
+          lineJoin: "round",
+          interactive: false,
+        }).addTo(map);
+      });
+
+      L.polyline(marathonRoute, {
+        color: "#f06f72",
+        opacity: 1,
+        weight: 6,
+        lineCap: "round",
+        lineJoin: "round",
+        interactive: false,
+      }).addTo(map);
+
+      L.polyline(marathonRoute, {
+        className: "marathon-route-flow",
+        color: "#fffdf7",
+        dashArray: "1 13",
+        opacity: 0.95,
+        weight: 2.5,
+        lineCap: "round",
+        interactive: false,
+      }).addTo(map);
+
+      routeLandmarks.forEach((landmark, index) => {
+        L.circleMarker(landmark.position, {
+          className: index === 0 ? "route-point route-point--start" : "route-point",
+          color: "#fffdf7",
+          fillColor: index === routeLandmarks.length - 1 ? "#3b278c" : "#205b44",
+          fillOpacity: 1,
+          radius: index === 0 || index === routeLandmarks.length - 1 ? 7 : 5,
+          weight: 3,
+        })
+          .addTo(map)
+          .bindTooltip(landmark.label, {
+            className: `route-label route-label--${index}`,
+            direction: landmark.direction ?? "top",
+            offset: [0, -8],
+            opacity: 1,
+            permanent: true,
+          });
+      });
+
+      map.fitBounds(routeOutline.getBounds(), {
+        paddingBottomRight: [28, 28],
+        paddingTopLeft: [28, 28],
+      });
+
+      requestAnimationFrame(() => map.invalidateSize());
+      removeMap = () => map.remove();
+    };
+
+    void setup();
+
+    return () => {
+      cancelled = true;
+      removeMap?.();
     };
   }, []);
 
   return (
     <div className="route-map">
-      <canvas
-        ref={canvasRef}
-        aria-label="Stylised route map showing the London Marathon journey from Greenwich to The Mall"
+      <div className="route-map__badge">Detailed course overview</div>
+      <div
+        className="route-map__canvas"
+        ref={mapRef}
+        aria-label="Detailed London map showing the London Marathon course from its three start areas, through Woolwich, Greenwich, Tower Bridge and Canary Wharf, to the finish on The Mall"
         role="img"
       />
       <div className="route-map__caption" aria-hidden="true">
-        <span>South-east London</span>
-        <span>Central London</span>
+        <span>Start · Blackheath</span>
+        <span>Finish · The Mall</span>
       </div>
     </div>
   );
@@ -238,6 +431,7 @@ export default function Home() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
+      <ParticleField />
 
       <div className="announcement">
         <span>London Marathon 2027 · In memory of Lauren Szumski</span>
@@ -284,16 +478,16 @@ export default function Home() {
 
           <figure className="hero__art">
             <div className="hero__image-frame">
-              <img
+              <Image
                 src="/kate-hero.png"
                 alt="Illustration of Kate running with an outstretched arm and a joyful smile"
+                width="1003"
+                height="1568"
               />
             </div>
             <figcaption>Training now · London bound</figcaption>
           </figure>
 
-          <Flower className="hero-flower hero-flower--one" tone="cream" />
-          <Flower className="hero-flower hero-flower--two" tone="coral" />
           <div className="hero__marquee" aria-hidden="true">
             <span>
               26.2 MILES · FOR LAUREN · FOR YOUNG EPILEPSY · 26.2 MILES ·
@@ -331,7 +525,6 @@ export default function Home() {
               Learn about Young Epilepsy <span aria-hidden="true">↗</span>
             </a>
           </div>
-          <Flower className="why-flower" tone="purple" />
         </section>
 
         <section className="lauren section-grid" id="lauren">
@@ -347,12 +540,7 @@ export default function Home() {
               </p>
             </div>
             <div className="lauren__garden" aria-hidden="true">
-              <Flower className="garden-flower garden-flower--one" tone="cream" />
-              <Flower className="garden-flower garden-flower--two" tone="coral" />
-              <Flower className="garden-flower garden-flower--three" tone="purple" />
-              <span className="garden-line garden-line--one" />
-              <span className="garden-line garden-line--two" />
-              <span className="garden-line garden-line--three" />
+              <span>Memories, photographs and Lauren&apos;s story</span>
             </div>
           </div>
         </section>
@@ -436,8 +624,9 @@ export default function Home() {
               <span className="map-copy__distance">26.2</span>
               <span>miles through London</span>
               <p>
-                An original illustrated route overview. Final 2027 event details
-                should be checked against the organiser&apos;s latest guidance.
+                A detailed street-map overview of the established London
+                Marathon course. Final 2027 arrangements will be checked
+                against the organiser&apos;s latest guidance.
               </p>
               <a
                 className="text-link"
@@ -453,8 +642,6 @@ export default function Home() {
         </section>
 
         <section className="donate" id="donate">
-          <Flower className="donate-flower donate-flower--one" tone="cream" />
-          <Flower className="donate-flower donate-flower--two" tone="coral" />
           <p className="eyebrow">Be part of Kate&apos;s 26.2 miles</p>
           <h2>
             Run with her.
@@ -477,7 +664,7 @@ export default function Home() {
           </a>
           <p>Kate runs London 2027, in memory of Lauren Szumski.</p>
         </div>
-        <img
+        <Image
           src="/young-epilepsy-logo.png"
           alt="Young Epilepsy"
           width="359"
