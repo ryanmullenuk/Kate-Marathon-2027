@@ -431,7 +431,7 @@ export default function Home() {
           <AmbientParticles />
           <div className="lauren__topline">
             <span className="section-number">02 / Lauren</span>
-            <span>More memories coming soon</span>
+            <span>A life full of memories</span>
           </div>
           <h2 className="lauren__title" data-reveal="title">
             <span>Lauren&apos;s</span>
@@ -439,10 +439,12 @@ export default function Home() {
           </h2>
           <div
             className="polaroid-gallery"
-            data-reveal="polaroids"
-            aria-label="Photographs of Lauren and Kate"
+            aria-label="Photographs of Lauren, Kate and friends"
           >
-            <figure className="polaroid polaroid--portrait">
+            <figure
+              className="polaroid polaroid--portrait"
+              data-reveal="polaroid"
+            >
               <div className="polaroid__photo polaroid__photo--portrait">
                 <Image
                   src="/lauren-portrait.jpeg"
@@ -458,7 +460,10 @@ export default function Home() {
             >
               <p>“She made amazing friends wherever she went.”</p>
             </blockquote>
-            <figure className="polaroid polaroid--together-one">
+            <figure
+              className="polaroid polaroid--together-one"
+              data-reveal="polaroid"
+            >
               <div className="polaroid__photo">
                 <Image
                   src="/kate-lauren-1.jpg"
@@ -474,7 +479,10 @@ export default function Home() {
             >
               <p>“An absolute pleasure to know. Truly missed.”</p>
             </blockquote>
-            <figure className="polaroid polaroid--summer">
+            <figure
+              className="polaroid polaroid--summer"
+              data-reveal="polaroid"
+            >
               <div className="polaroid__photo polaroid__photo--portrait">
                 <Image
                   src="/lauren-summer.jpeg"
@@ -517,7 +525,10 @@ export default function Home() {
             >
               <p>“Clever, independent, kind and full of joy.”</p>
             </blockquote>
-            <figure className="polaroid polaroid--together-two">
+            <figure
+              className="polaroid polaroid--together-two"
+              data-reveal="polaroid"
+            >
               <div className="polaroid__photo">
                 <Image
                   src="/kate-lauren-2.jpg"
@@ -533,13 +544,81 @@ export default function Home() {
             >
               <p>“Her adventurous, fun nature lives on in every story.”</p>
             </blockquote>
-            <figure className="polaroid polaroid--view">
+            <figure
+              className="polaroid polaroid--view"
+              data-reveal="polaroid"
+            >
               <div className="polaroid__photo polaroid__photo--landscape">
                 <Image
                   src="/lauren-view.jpeg"
-                  alt="Lauren sitting on a rock looking over the landscape"
+                  alt="Lauren sitting on a rock looking across the mountains at sunset"
                   fill
                   sizes="(max-width: 760px) 64vw, 22vw"
+                />
+              </div>
+            </figure>
+            <figure
+              className="polaroid polaroid--friends-black-white"
+              data-reveal="polaroid"
+            >
+              <div className="polaroid__photo polaroid__photo--landscape">
+                <Image
+                  src="/lauren-friends-black-white.jpeg"
+                  alt="Lauren smiling with a friend in a black-and-white photograph"
+                  fill
+                  sizes="(max-width: 760px) 82vw, 26vw"
+                />
+              </div>
+            </figure>
+            <figure
+              className="polaroid polaroid--seaside-selfie"
+              data-reveal="polaroid"
+            >
+              <div className="polaroid__photo polaroid__photo--square">
+                <Image
+                  src="/lauren-seaside-selfie.jpeg"
+                  alt="Lauren smiling with a friend beside the sea"
+                  fill
+                  sizes="(max-width: 760px) 72vw, 25vw"
+                />
+              </div>
+            </figure>
+            <figure
+              className="polaroid polaroid--friends-evening"
+              data-reveal="polaroid"
+            >
+              <div className="polaroid__photo polaroid__photo--landscape">
+                <Image
+                  src="/lauren-friends-evening.jpeg"
+                  alt="Lauren and friends together on an evening out"
+                  fill
+                  sizes="(max-width: 760px) 82vw, 26vw"
+                />
+              </div>
+            </figure>
+            <figure
+              className="polaroid polaroid--travel-bench"
+              data-reveal="polaroid"
+            >
+              <div className="polaroid__photo polaroid__photo--landscape">
+                <Image
+                  src="/lauren-travel-bench.jpeg"
+                  alt="Lauren sitting with a friend in a tropical garden"
+                  fill
+                  sizes="(max-width: 760px) 88vw, 31vw"
+                />
+              </div>
+            </figure>
+            <figure
+              className="polaroid polaroid--friends-dinner"
+              data-reveal="polaroid"
+            >
+              <div className="polaroid__photo polaroid__photo--landscape">
+                <Image
+                  src="/lauren-friends-dinner.jpeg"
+                  alt="Lauren and friends gathered together around a table"
+                  fill
+                  sizes="(max-width: 760px) 84vw, 31vw"
                 />
               </div>
             </figure>
