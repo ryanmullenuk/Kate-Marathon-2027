@@ -1658,10 +1658,15 @@ footer > a {
   }
 
   .hero__runner {
-    bottom: 2.8rem;
-    height: 52%;
-    left: 76%;
-    width: 88vw;
+    bottom: auto;
+    height: 100%;
+    left: 68%;
+    top: 0.25rem;
+    width: 112vw;
+  }
+
+  .hero__runner img {
+    object-position: center top;
   }
 
   .hero__pattern--bottom {
