@@ -409,9 +409,9 @@ export default function Home() {
                 around her, and to help young people living with epilepsy.
               </p>
               <p>
-                Young Epilepsy says around 100,000 children and young people in
-                the UK have epilepsy. Every donation can help the charity
-                support more young people and their families.
+                Every donation can help Young Epilepsy support more young
+                people and their families with practical help, specialist
+                services and a stronger voice.
               </p>
               <a
                 className="text-link"
@@ -422,6 +422,55 @@ export default function Home() {
                 Learn about Young Epilepsy <span aria-hidden="true">↗</span>
               </a>
             </div>
+          </div>
+          <div
+            className="why__stats"
+            aria-label="Young Epilepsy statistics"
+          >
+            <div className="why__stats-topline">
+              <span>Why the support matters</span>
+              <span>Figures from Young Epilepsy</span>
+            </div>
+            <article
+              className="why__stat why__stat--purple"
+              data-reveal="up"
+            >
+              <strong>100K</strong>
+              <p>
+                Around 100,000 children and young people in the UK have
+                epilepsy, with 23 new cases diagnosed every day.
+              </p>
+            </article>
+            <article
+              className="why__stat why__stat--green"
+              data-reveal="up"
+            >
+              <strong>1 in 3</strong>
+              <p>
+                Children and young people with epilepsy have seizures that
+                cannot be controlled with medication.
+              </p>
+            </article>
+            <article
+              className="why__stat why__stat--coral"
+              data-reveal="up"
+            >
+              <strong>3 in 4</strong>
+              <p>
+                Children and young people say living with epilepsy greatly
+                affects their mental health.
+              </p>
+            </article>
+            <article
+              className="why__stat why__stat--pink"
+              data-reveal="up"
+            >
+              <strong>1 in 3</strong>
+              <p>
+                Children and young people with epilepsy do not get the support
+                they need to take part fully at school.
+              </p>
+            </article>
           </div>
         </section>
 
