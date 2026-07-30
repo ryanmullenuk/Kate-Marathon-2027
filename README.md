@@ -22,4 +22,10 @@ pnpm install
 pnpm dev
 ```
 
-The website is built with Next.js, React and the Sites deployment runtime.
+## Publishing
+
+The website is built with Next.js and React, then exported as a static site.
+Every change merged into `main` is built and published automatically through
+GitHub Pages.
+
+The production domain is `https://kateruns.co.uk`.

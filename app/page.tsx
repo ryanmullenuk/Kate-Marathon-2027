@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 
 const DONATION_URL = "#donate";
-const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED = 0;
+const FUNDRAISING_TARGET: number = 3000;
+const AMOUNT_RAISED: number = 0;
 const TRAINER_COUNT = 10;
 
 type Particle = {
@@ -477,7 +478,7 @@ export default function Home() {
 
           <figure className="hero__art">
             <div className="hero__image-frame">
-              <img
+              <Image
                 src="/kate-hero.png"
                 alt="Illustration of Kate running with an outstretched arm and a joyful smile"
                 width="1003"
@@ -663,7 +664,7 @@ export default function Home() {
           </a>
           <p>Kate runs London 2027, in memory of Lauren Szumski.</p>
         </div>
-        <img
+        <Image
           src="/young-epilepsy-logo.png"
           alt="Young Epilepsy"
           width="359"
