@@ -18,10 +18,12 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   assert.match(html, />story</i);
   assert.match(html, /Detailed London map showing the London Marathon course/i);
   assert.match(html, /particle-field/i);
-  assert.match(html, /Scroll to send Kate on her way/i);
+  assert.match(html, /Move or tap for a little extra energy/i);
   assert.match(html, /src="\/kate-run-transparent\.png"/i);
   assert.match(html, /aria-label="Visit the Young Epilepsy website"/i);
   assert.match(html, /class="polaroid-gallery"/i);
-  assert.match(html, /Kate &amp; Lauren/i);
+  assert.match(html, /Full of life\. Full of joy\./i);
+  assert.match(html, /Read the memories shared for Lauren/i);
+  assert.doesNotMatch(html, /<figcaption>/i);
   assert.doesNotMatch(html, /class="[^"]*\bflower\b/i);
 });

@@ -39,20 +39,12 @@ function ScrollMotion() {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    const hero = document.querySelector<HTMLElement>(".hero");
     const elements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-reveal]"),
     );
 
     if (reducedMotion) {
       elements.forEach((element) => element.classList.add("is-visible"));
-      hero?.style.setProperty("--hero-run-progress", "1");
-      hero?.style.setProperty("--hero-run-x", "0vw");
-      hero?.style.setProperty("--hero-run-y", "0px");
-      hero?.style.setProperty("--hero-run-rotate", "0deg");
-      hero?.style.setProperty("--hero-run-opacity", "1");
-      hero?.style.setProperty("--hero-copy-opacity", "1");
-      hero?.style.setProperty("--hero-copy-shift", "0vw");
       return;
     }
 
@@ -85,47 +77,6 @@ function ScrollMotion() {
           "--scroll-offset",
           `${window.scrollY}px`,
         );
-
-        if (hero) {
-          const heroRect = hero.getBoundingClientRect();
-          const travel = Math.max(1, hero.offsetHeight - window.innerHeight);
-          const heroProgress = Math.min(
-            1,
-            Math.max(0, -heroRect.top / travel),
-          );
-          hero.style.setProperty(
-            "--hero-run-progress",
-            heroProgress.toFixed(4),
-          );
-          hero.style.setProperty(
-            "--hero-run-x",
-            `${(-50 + heroProgress * 50).toFixed(3)}vw`,
-          );
-          hero.style.setProperty(
-            "--hero-run-y",
-            `${(
-              Math.sin(heroProgress * Math.PI * 8) *
-              (1 - heroProgress) *
-              9
-            ).toFixed(2)}px`,
-          );
-          hero.style.setProperty(
-            "--hero-run-rotate",
-            `${(-6 + heroProgress * 6).toFixed(2)}deg`,
-          );
-          hero.style.setProperty(
-            "--hero-run-opacity",
-            (0.3 + heroProgress * 0.7).toFixed(3),
-          );
-          hero.style.setProperty(
-            "--hero-copy-opacity",
-            (1 - heroProgress * 0.86).toFixed(3),
-          );
-          hero.style.setProperty(
-            "--hero-copy-shift",
-            `${(-heroProgress * 5).toFixed(3)}vw`,
-          );
-        }
       });
     };
 
@@ -575,7 +526,7 @@ export default function Home() {
                 </a>
               </div>
               <span className="particle-hint" aria-hidden="true">
-                Scroll to send Kate on her way
+                Move or tap for a little extra energy
               </span>
             </div>
 
@@ -662,7 +613,6 @@ export default function Home() {
                   sizes="(max-width: 760px) 70vw, 19vw"
                 />
               </div>
-              <figcaption>Lauren</figcaption>
             </figure>
             <figure className="polaroid polaroid--together-one">
               <div className="polaroid__photo">
@@ -673,7 +623,6 @@ export default function Home() {
                   sizes="(max-width: 760px) 82vw, 29vw"
                 />
               </div>
-              <figcaption>Kate &amp; Lauren</figcaption>
             </figure>
             <figure className="polaroid polaroid--summer">
               <div className="polaroid__photo polaroid__photo--portrait">
@@ -684,8 +633,30 @@ export default function Home() {
                   sizes="(max-width: 760px) 55vw, 15vw"
                 />
               </div>
-              <figcaption>Sunshine</figcaption>
             </figure>
+            <article className="lauren__portrait-copy" data-reveal="up">
+              <p className="eyebrow">A little about Lauren</p>
+              <h3>Full of life. Full of joy.</h3>
+              <p>
+                Lauren was clever, independent, kind and full of joy. Her
+                beautiful smile and adventurous spirit stayed with everyone
+                she met.
+              </p>
+              <p>
+                She loved travel, new places and making memories, and had a way
+                of turning new faces into friends. People were drawn to her
+                warmth and quickly fell in love with the person she was.
+              </p>
+              <a
+                className="text-link"
+                href="https://www.justgiving.com/fundraising/Lauren-Szumski1"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Read the memories shared for Lauren{" "}
+                <span aria-hidden="true">↗</span>
+              </a>
+            </article>
             <figure className="polaroid polaroid--together-two">
               <div className="polaroid__photo">
                 <Image
@@ -695,7 +666,6 @@ export default function Home() {
                   sizes="(max-width: 760px) 82vw, 30vw"
                 />
               </div>
-              <figcaption>Always laughing</figcaption>
             </figure>
             <figure className="polaroid polaroid--view">
               <div className="polaroid__photo polaroid__photo--landscape">
@@ -706,17 +676,7 @@ export default function Home() {
                   sizes="(max-width: 760px) 64vw, 22vw"
                 />
               </div>
-              <figcaption>Adventures</figcaption>
             </figure>
-          </div>
-          <div className="lauren__bottom">
-            <p className="lead" data-reveal="up">
-              A life remembered with love.
-            </p>
-            <p data-reveal="up">
-              This space will continue to grow with memories and the story of
-              Lauren&apos;s life, shared by the people who knew and loved her.
-            </p>
           </div>
         </section>
 
