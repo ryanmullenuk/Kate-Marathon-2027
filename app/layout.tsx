@@ -19,9 +19,33 @@ export const metadata: Metadata = {
   title: "Kate Runs London 2027 | For Lauren & Young Epilepsy",
   description:
     "Follow Kate's London Marathon 2027 journey and help her raise £3,000 for Young Epilepsy in memory of Lauren Szumski.",
+  manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/favicon.png",
+    icon: [
+      {
+        url: "/favicon.png",
+        sizes: "128x128",
+        type: "image/png",
+      },
+      {
+        url: "/kate-runs-icon.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
     shortcut: "/favicon.png",
+    apple: [
+      {
+        url: "/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Kate Runs 2027",
   },
   openGraph: {
     title: "Kate Runs London 2027",
@@ -29,7 +53,7 @@ export const metadata: Metadata = {
       "26.2 miles for Lauren, raising money for Young Epilepsy.",
     images: [
       {
-        url: "/og.png",
+        url: "/kate-runs-share.png",
         width: 1734,
         height: 907,
         alt: "Kate Runs London 2027 — 26.2 miles for Lauren and Young Epilepsy",
@@ -44,7 +68,7 @@ export const metadata: Metadata = {
     title: "Kate Runs London 2027",
     description:
       "26.2 miles for Lauren, raising money for Young Epilepsy.",
-    images: ["/og.png"],
+    images: ["/kate-runs-share.png"],
   },
 };
 
