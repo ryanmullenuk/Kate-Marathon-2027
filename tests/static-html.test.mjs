@@ -8,11 +8,19 @@ async function exportedPage() {
 
 test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   const html = await exportedPage();
+  const donationLinks =
+    html.match(
+      /href="https:\/\/donate\.justgiving\.com\/page\/kateruns27\/donation-amount"/gi,
+    ) ?? [];
 
   assert.match(
     html,
     /<title>Kate Runs London 2027 \| For Lauren &amp; Young Epilepsy<\/title>/i,
   );
+  assert.equal(donationLinks.length, 5);
+  assert.doesNotMatch(html, /JustGiving link coming soon/i);
+  assert.doesNotMatch(html, /Donation link coming soon/i);
+  assert.doesNotMatch(html, /fundraising opens/i);
   assert.match(html, /Kate runs/);
   assert.match(html, /Lauren(?:&apos;|&#x27;|')s/i);
   assert.match(html, />story</i);

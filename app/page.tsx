@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import { marathonRoute } from "./marathon-route";
 
-const DONATION_URL = "#donate";
+const DONATION_URL =
+  "https://donate.justgiving.com/page/kateruns27/donation-amount";
 const FUNDRAISING_TARGET = 3000;
 const AMOUNT_RAISED: number = 0;
 const TRAINER_COUNT = 10;
@@ -289,7 +290,9 @@ export default function Home() {
 
       <div className="announcement">
         <span>London Marathon 2027 · In memory of Lauren Szumski</span>
-        <a href={DONATION_URL}>JustGiving link coming soon</a>
+        <a href={DONATION_URL} target="_blank" rel="noreferrer">
+          Donate through JustGiving
+        </a>
       </div>
 
       <header className="site-header">
@@ -302,7 +305,12 @@ export default function Home() {
           <a href="#goal">The goal</a>
           <a href="#route">The route</a>
         </nav>
-        <a className="button button--small" href={DONATION_URL}>
+        <a
+          className="button button--small"
+          href={DONATION_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
           Donate now
         </a>
       </header>
@@ -344,7 +352,12 @@ export default function Home() {
                 £3,000 in memory of her friend, Lauren Szumski.
               </p>
               <div className="hero__actions">
-                <a className="button" href={DONATION_URL}>
+                <a
+                  className="button"
+                  href={DONATION_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Donate now
                 </a>
                 <a className="text-link" href="#why">
@@ -551,7 +564,12 @@ export default function Home() {
               The tracker will be updated as donations arrive. Ten trainers,
               £300 each, all the way to the finish line.
             </p>
-            <a className="button button--cream" href={DONATION_URL}>
+            <a
+              className="button button--cream"
+              href={DONATION_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
               Donate now
             </a>
           </div>
@@ -647,16 +665,18 @@ export default function Home() {
             <span className="outline">Remember Lauren.</span>
           </h2>
           <p data-reveal="up">
-            The JustGiving page will be linked here as soon as fundraising
-            opens.
+            Every donation helps Kate towards her £3,000 goal for Young
+            Epilepsy, in memory of Lauren.
           </p>
-          <span
-            className="button button--disabled"
-            aria-disabled="true"
+          <a
+            className="button button--cream"
+            href={DONATION_URL}
+            target="_blank"
+            rel="noreferrer"
             data-reveal="up"
           >
-            Donation link coming soon
-          </span>
+            Donate through JustGiving
+          </a>
         </section>
       </main>
 
