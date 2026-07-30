@@ -439,6 +439,12 @@ export default function Home() {
                 />
               </div>
             </figure>
+            <blockquote
+              className="memory-note memory-note--four"
+              data-reveal="left"
+            >
+              <p>“She made amazing friends wherever she went.”</p>
+            </blockquote>
             <figure className="polaroid polaroid--together-one">
               <div className="polaroid__photo">
                 <Image
@@ -449,6 +455,12 @@ export default function Home() {
                 />
               </div>
             </figure>
+            <blockquote
+              className="memory-note memory-note--five"
+              data-reveal="right"
+            >
+              <p>“An absolute pleasure to know. Truly missed.”</p>
+            </blockquote>
             <figure className="polaroid polaroid--summer">
               <div className="polaroid__photo polaroid__photo--portrait">
                 <Image

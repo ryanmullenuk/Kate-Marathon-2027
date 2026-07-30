@@ -883,7 +883,7 @@ img {
 .polaroid-gallery {
   align-items: start;
   display: grid;
-  gap: clamp(4rem, 7vw, 7rem) clamp(0.75rem, 1.8vw, 1.75rem);
+  gap: clamp(6rem, 10vw, 10rem) clamp(0.75rem, 1.8vw, 1.75rem);
   grid-template-columns: repeat(12, minmax(0, 1fr));
   margin: clamp(1rem, 3vw, 3rem) auto clamp(3rem, 7vw, 7rem);
   max-width: 96rem;
@@ -1062,6 +1062,36 @@ img {
   grid-column: 6 / 9;
   grid-row: 3;
   rotate: -2deg;
+}
+
+.memory-note--four,
+.memory-note--five {
+  align-self: end;
+  padding: clamp(1.1rem, 1.8vw, 1.75rem);
+  width: 88%;
+}
+
+.memory-note--four p,
+.memory-note--five p {
+  font-size: clamp(1.25rem, 1.85vw, 2.15rem);
+}
+
+.memory-note--four {
+  background: var(--coral);
+  grid-column: 1 / 4;
+  grid-row: 1;
+  justify-self: end;
+  rotate: 3deg;
+  translate: 10% 115%;
+}
+
+.memory-note--five {
+  background: var(--cream);
+  grid-column: 9 / 13;
+  grid-row: 1;
+  justify-self: end;
+  rotate: -3deg;
+  translate: -5% 115%;
 }
 
 .polaroid--view {
@@ -1785,6 +1815,12 @@ footer > a {
     rotate: 0deg;
   }
 
+  .memory-note--four,
+  .memory-note--five {
+    align-self: auto;
+    translate: 0;
+  }
+
   .memory-note--one {
     justify-self: start;
     width: 88%;
@@ -1798,6 +1834,16 @@ footer > a {
   .memory-note--three {
     justify-self: center;
     width: 90%;
+  }
+
+  .memory-note--four {
+    justify-self: end;
+    width: 86%;
+  }
+
+  .memory-note--five {
+    justify-self: start;
+    width: 88%;
   }
 
   .polaroid--view {

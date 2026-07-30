@@ -31,6 +31,8 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   assert.match(html, /2 May 2023/i);
   assert.match(html, /Forever in our hearts\. Shine brightly\./i);
   assert.match(html, /Clever, independent, kind and full of joy\./i);
+  assert.match(html, /She made amazing friends wherever she went\./i);
+  assert.match(html, /An absolute pleasure to know\. Truly missed\./i);
   assert.doesNotMatch(html, /justgiving\.com\/fundraising\/Lauren-Szumski1/i);
   assert.doesNotMatch(html, /<figcaption>/i);
   assert.doesNotMatch(html, /class="[^"]*\bflower\b/i);
