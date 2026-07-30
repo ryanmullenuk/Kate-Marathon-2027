@@ -9,31 +9,6 @@ const FUNDRAISING_TARGET = 3000;
 const AMOUNT_RAISED: number = 0;
 const TRAINER_COUNT = 10;
 
-type Particle = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  gravity: number;
-  drag: number;
-  life: number;
-  maxLife: number;
-  colour: string;
-  rotation: number;
-  spin: number;
-  shape: 0 | 1 | 2;
-};
-
-const particleColours = [
-  "#f2a1b8",
-  "#f06f72",
-  "#dff3bd",
-  "#8c79ca",
-  "#fffdf7",
-  "#08b875",
-];
-
 function ScrollMotion() {
   useEffect(() => {
     const reducedMotion = window.matchMedia(
@@ -95,163 +70,14 @@ function ScrollMotion() {
   return null;
 }
 
-function InteractiveParticles() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    let particles: Particle[] = [];
-    let animationId = 0;
-    let width = 0;
-    let height = 0;
-    let lastTrail = { x: -100, y: -100, time: 0 };
-
-    const resize = () => {
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = Math.round(width * ratio);
-      canvas.height = Math.round(height * ratio);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    };
-
-    const createBurst = (
-      x: number,
-      y: number,
-      count: number,
-      strength: number,
-    ) => {
-      if (reducedMotion) return;
-
-      for (let index = 0; index < count; index += 1) {
-        const angle = Math.PI * (1.08 + Math.random() * 0.84);
-        const speed = strength * (0.55 + Math.random() * 0.8);
-        const life = 42 + Math.random() * 42;
-
-        particles.push({
-          x,
-          y,
-          vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.4,
-          vy: Math.sin(angle) * speed - Math.random() * strength * 0.65,
-          radius: 2.5 + Math.random() * 6.5,
-          gravity: 0.11 + Math.random() * 0.08,
-          drag: 0.982 + Math.random() * 0.01,
-          life,
-          maxLife: life,
-          colour:
-            particleColours[
-              Math.floor(Math.random() * particleColours.length)
-            ],
-          rotation: Math.random() * Math.PI,
-          spin: (Math.random() - 0.5) * 0.2,
-          shape: Math.floor(Math.random() * 3) as 0 | 1 | 2,
-        });
-      }
-
-      if (particles.length > 320) particles = particles.slice(-320);
-    };
-
-    const drawParticle = (particle: Particle) => {
-      const alpha = Math.max(0, particle.life / particle.maxLife);
-      context.save();
-      context.globalAlpha = Math.min(0.92, alpha * 1.4);
-      context.fillStyle = particle.colour;
-      context.translate(particle.x, particle.y);
-      context.rotate(particle.rotation);
-
-      if (particle.shape === 0) {
-        context.beginPath();
-        context.arc(0, 0, particle.radius, 0, Math.PI * 2);
-        context.fill();
-      } else if (particle.shape === 1) {
-        context.fillRect(
-          -particle.radius,
-          -particle.radius,
-          particle.radius * 2,
-          particle.radius * 2,
-        );
-      } else {
-        context.beginPath();
-        context.moveTo(0, -particle.radius * 1.55);
-        context.lineTo(particle.radius * 0.5, -particle.radius * 0.5);
-        context.lineTo(particle.radius * 1.55, 0);
-        context.lineTo(particle.radius * 0.5, particle.radius * 0.5);
-        context.lineTo(0, particle.radius * 1.55);
-        context.lineTo(-particle.radius * 0.5, particle.radius * 0.5);
-        context.lineTo(-particle.radius * 1.55, 0);
-        context.lineTo(-particle.radius * 0.5, -particle.radius * 0.5);
-        context.closePath();
-        context.fill();
-      }
-
-      context.restore();
-    };
-
-    const animate = () => {
-      context.clearRect(0, 0, width, height);
-
-      particles.forEach((particle) => {
-        particle.vx *= particle.drag;
-        particle.vy = particle.vy * particle.drag + particle.gravity;
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.rotation += particle.spin;
-        particle.life -= 1;
-        drawParticle(particle);
-      });
-
-      particles = particles.filter(
-        (particle) =>
-          particle.life > 0 &&
-          particle.y < height + 40 &&
-          particle.x > -40 &&
-          particle.x < width + 40,
-      );
-      animationId = requestAnimationFrame(animate);
-    };
-
-    const onPointerDown = (event: PointerEvent) => {
-      createBurst(event.clientX, event.clientY, 28, 7.4);
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      const now = performance.now();
-      const distance = Math.hypot(
-        event.clientX - lastTrail.x,
-        event.clientY - lastTrail.y,
-      );
-
-      if (now - lastTrail.time > 38 && distance > 20) {
-        createBurst(event.clientX, event.clientY, 2, 2.8);
-        lastTrail = { x: event.clientX, y: event.clientY, time: now };
-      }
-    };
-
-    resize();
-    animationId = requestAnimationFrame(animate);
-    window.addEventListener("resize", resize);
-    window.addEventListener("pointerdown", onPointerDown, { passive: true });
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointermove", onPointerMove);
-    };
-  }, []);
-
-  return <canvas className="particle-field" ref={canvasRef} aria-hidden="true" />;
+function AmbientParticles() {
+  return (
+    <div className="ambient-particles" aria-hidden="true">
+      {Array.from({ length: 16 }, (_, index) => (
+        <span key={index} />
+      ))}
+    </div>
+  );
 }
 
 const routeLandmarks: {
@@ -456,7 +282,6 @@ export default function Home() {
   return (
     <>
       <ScrollMotion />
-      <InteractiveParticles />
 
       <a className="skip-link" href="#main">
         Skip to content
@@ -485,6 +310,7 @@ export default function Home() {
       <main id="main">
         <section className="hero" id="top">
           <div className="hero__stage">
+            <AmbientParticles />
             <div
               className="hero__pattern hero__pattern--top"
               aria-hidden="true"
@@ -525,9 +351,6 @@ export default function Home() {
                   Read Kate&apos;s reason <span aria-hidden="true">↓</span>
                 </a>
               </div>
-              <span className="particle-hint" aria-hidden="true">
-                Move or tap for a little extra energy
-              </span>
             </div>
 
             <div className="hero__marquee" aria-hidden="true">
@@ -540,6 +363,7 @@ export default function Home() {
         </section>
 
         <section className="why" id="why">
+          <AmbientParticles />
           <div className="why__inner">
             <div className="section-number" data-reveal="left">
               01 / Why
@@ -591,6 +415,7 @@ export default function Home() {
         <section className="lauren" id="lauren">
           <div className="lauren__orb lauren__orb--one" aria-hidden="true" />
           <div className="lauren__orb lauren__orb--two" aria-hidden="true" />
+          <AmbientParticles />
           <div className="lauren__topline">
             <span className="section-number">02 / Lauren</span>
             <span>More memories coming soon</span>
@@ -643,20 +468,30 @@ export default function Home() {
                 she met.
               </p>
               <p>
-                She loved travel, new places and making memories, and had a way
-                of turning new faces into friends. People were drawn to her
-                warmth and quickly fell in love with the person she was.
+                Lauren was lost suddenly on 2 May 2023. The shock reached far
+                beyond one place, leaving family and friends around the world
+                trying to understand life without her. The impact was profound
+                because the love for her was so great.
               </p>
-              <a
-                className="text-link"
-                href="https://www.justgiving.com/fundraising/Lauren-Szumski1"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Read the memories shared for Lauren{" "}
-                <span aria-hidden="true">↗</span>
-              </a>
+              <p>
+                What remains is the way Lauren lived: travelling, seeking out
+                new places and making memories. She turned new faces into
+                friends, and people quickly fell in love with her warmth,
+                humour and generous spirit.
+              </p>
             </article>
+            <blockquote
+              className="memory-note memory-note--one"
+              data-reveal="left"
+            >
+              <p>“Forever in our hearts. Shine brightly.”</p>
+            </blockquote>
+            <blockquote
+              className="memory-note memory-note--two"
+              data-reveal="right"
+            >
+              <p>“Clever, independent, kind and full of joy.”</p>
+            </blockquote>
             <figure className="polaroid polaroid--together-two">
               <div className="polaroid__photo">
                 <Image
@@ -667,6 +502,12 @@ export default function Home() {
                 />
               </div>
             </figure>
+            <blockquote
+              className="memory-note memory-note--three"
+              data-reveal="up"
+            >
+              <p>“Her adventurous, fun nature lives on in every story.”</p>
+            </blockquote>
             <figure className="polaroid polaroid--view">
               <div className="polaroid__photo polaroid__photo--landscape">
                 <Image
@@ -681,6 +522,7 @@ export default function Home() {
         </section>
 
         <section className="goal" id="goal">
+          <AmbientParticles />
           <div className="goal__topline">
             <span className="section-number">03 / The goal</span>
             <span>Help turn every trainer pink</span>
@@ -704,6 +546,7 @@ export default function Home() {
         </section>
 
         <section className="course" id="route">
+          <AmbientParticles />
           <div className="course__intro">
             <div className="section-number" data-reveal="left">
               04 / The course
@@ -783,6 +626,7 @@ export default function Home() {
         </section>
 
         <section className="donate" id="donate">
+          <AmbientParticles />
           <p className="eyebrow" data-reveal="up">
             Be part of Kate&apos;s 26.2 miles
           </p>

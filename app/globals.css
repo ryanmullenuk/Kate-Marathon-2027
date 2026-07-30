@@ -77,13 +77,184 @@ img {
   top: 1rem;
 }
 
-.particle-field {
-  height: 100vh;
+.ambient-particles {
+  --particle-a: rgba(242, 161, 184, 0.62);
+  --particle-b: rgba(240, 111, 114, 0.52);
+  --particle-c: rgba(223, 243, 189, 0.56);
+  --particle-d: rgba(255, 253, 247, 0.5);
   inset: 0;
+  overflow: hidden;
   pointer-events: none;
-  position: fixed;
-  width: 100vw;
-  z-index: 80;
+  position: absolute;
+  z-index: 0;
+}
+
+.ambient-particles span {
+  animation: ambient-float var(--particle-duration, 20s) ease-in-out
+    var(--particle-delay, 0s) infinite alternate;
+  background: var(--particle-a);
+  border-radius: 50%;
+  height: var(--particle-size, 0.55rem);
+  left: var(--particle-left, 10%);
+  opacity: 0.34;
+  position: absolute;
+  top: var(--particle-top, 10%);
+  width: var(--particle-size, 0.55rem);
+}
+
+.ambient-particles span:nth-child(4n + 2) {
+  background: var(--particle-b);
+}
+
+.ambient-particles span:nth-child(4n + 3) {
+  background: var(--particle-c);
+}
+
+.ambient-particles span:nth-child(4n + 4) {
+  background: var(--particle-d);
+}
+
+.ambient-particles span:nth-child(5n) {
+  background: transparent;
+  border: 1.5px solid var(--particle-b);
+}
+
+.ambient-particles span:nth-child(1) {
+  --particle-delay: -7s;
+  --particle-duration: 19s;
+  --particle-left: 5%;
+  --particle-size: 0.42rem;
+  --particle-top: 12%;
+}
+
+.ambient-particles span:nth-child(2) {
+  --particle-delay: -12s;
+  --particle-duration: 24s;
+  --particle-left: 16%;
+  --particle-size: 0.8rem;
+  --particle-top: 35%;
+}
+
+.ambient-particles span:nth-child(3) {
+  --particle-delay: -2s;
+  --particle-duration: 21s;
+  --particle-left: 28%;
+  --particle-size: 0.34rem;
+  --particle-top: 71%;
+}
+
+.ambient-particles span:nth-child(4) {
+  --particle-delay: -18s;
+  --particle-duration: 27s;
+  --particle-left: 39%;
+  --particle-size: 0.6rem;
+  --particle-top: 18%;
+}
+
+.ambient-particles span:nth-child(5) {
+  --particle-delay: -5s;
+  --particle-duration: 23s;
+  --particle-left: 48%;
+  --particle-size: 1rem;
+  --particle-top: 57%;
+}
+
+.ambient-particles span:nth-child(6) {
+  --particle-delay: -15s;
+  --particle-duration: 29s;
+  --particle-left: 57%;
+  --particle-size: 0.38rem;
+  --particle-top: 82%;
+}
+
+.ambient-particles span:nth-child(7) {
+  --particle-delay: -9s;
+  --particle-duration: 18s;
+  --particle-left: 67%;
+  --particle-size: 0.7rem;
+  --particle-top: 26%;
+}
+
+.ambient-particles span:nth-child(8) {
+  --particle-delay: -20s;
+  --particle-duration: 26s;
+  --particle-left: 76%;
+  --particle-size: 0.45rem;
+  --particle-top: 64%;
+}
+
+.ambient-particles span:nth-child(9) {
+  --particle-delay: -3s;
+  --particle-duration: 22s;
+  --particle-left: 88%;
+  --particle-size: 0.86rem;
+  --particle-top: 9%;
+}
+
+.ambient-particles span:nth-child(10) {
+  --particle-delay: -14s;
+  --particle-duration: 30s;
+  --particle-left: 94%;
+  --particle-size: 0.52rem;
+  --particle-top: 47%;
+}
+
+.ambient-particles span:nth-child(11) {
+  --particle-delay: -10s;
+  --particle-duration: 25s;
+  --particle-left: 9%;
+  --particle-size: 0.68rem;
+  --particle-top: 89%;
+}
+
+.ambient-particles span:nth-child(12) {
+  --particle-delay: -6s;
+  --particle-duration: 20s;
+  --particle-left: 35%;
+  --particle-size: 0.3rem;
+  --particle-top: 44%;
+}
+
+.ambient-particles span:nth-child(13) {
+  --particle-delay: -16s;
+  --particle-duration: 28s;
+  --particle-left: 62%;
+  --particle-size: 0.92rem;
+  --particle-top: 6%;
+}
+
+.ambient-particles span:nth-child(14) {
+  --particle-delay: -4s;
+  --particle-duration: 22s;
+  --particle-left: 72%;
+  --particle-size: 0.36rem;
+  --particle-top: 92%;
+}
+
+.ambient-particles span:nth-child(15) {
+  --particle-delay: -19s;
+  --particle-duration: 31s;
+  --particle-left: 83%;
+  --particle-size: 0.76rem;
+  --particle-top: 38%;
+}
+
+.ambient-particles span:nth-child(16) {
+  --particle-delay: -11s;
+  --particle-duration: 24s;
+  --particle-left: 21%;
+  --particle-size: 0.5rem;
+  --particle-top: 4%;
+}
+
+@keyframes ambient-float {
+  from {
+    transform: translate3d(-0.5rem, 0.8rem, 0);
+  }
+
+  to {
+    transform: translate3d(2.4rem, -3.2rem, 0);
+  }
 }
 
 .announcement {
@@ -365,6 +536,14 @@ img {
   position: relative;
 }
 
+.hero__stage > .ambient-particles {
+  --particle-a: rgba(240, 111, 114, 0.68);
+  --particle-b: rgba(242, 161, 184, 0.7);
+  --particle-c: rgba(255, 253, 247, 0.62);
+  --particle-d: rgba(59, 39, 140, 0.3);
+  z-index: 1;
+}
+
 .hero__stage::after {
   background:
     radial-gradient(circle, rgba(255, 253, 247, 0.9) 0 0.25rem, transparent 0.29rem);
@@ -386,13 +565,13 @@ img {
   bottom: 2.9rem;
   filter: drop-shadow(0 1.35rem 1.1rem rgba(10, 61, 46, 0.18));
   height: calc(100% - 3.2rem);
-  left: 77%;
+  left: 82%;
   margin: 0;
   pointer-events: none;
   position: absolute;
   transform: translate3d(-50%, 0, 0);
   transform-origin: center bottom;
-  width: min(39vw, 34rem);
+  width: min(35vw, 33rem);
   z-index: 3;
 }
 
@@ -403,9 +582,14 @@ img {
 
 .hero__copy {
   animation: hero-copy-in 850ms 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  max-width: 52rem;
+  backdrop-filter: blur(5px);
+  background: rgba(223, 243, 189, 0.93);
+  border: 1px solid rgba(23, 54, 43, 0.16);
+  box-shadow: 0.85rem 0.85rem 0 rgba(23, 54, 43, 0.14);
+  max-width: 43rem;
+  padding: clamp(1.35rem, 2.5vw, 2.5rem);
   position: relative;
-  width: min(55vw, 52rem);
+  width: min(47vw, 43rem);
   z-index: 4;
 }
 
@@ -454,12 +638,12 @@ img {
 }
 
 .hero__eyebrow {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.85rem;
 }
 
 .hero h1 {
-  font-size: clamp(4.7rem, 6.4vw, 7.4rem);
-  max-width: 6.8ch;
+  font-size: clamp(4.4rem, 5.7vw, 6.8rem);
+  max-width: 6.2ch;
 }
 
 .hero__intro {
@@ -475,19 +659,6 @@ img {
   flex-wrap: wrap;
   gap: 1.5rem;
   margin-top: 0.95rem;
-}
-
-.particle-hint {
-  display: block;
-  font-size: 0.6rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  bottom: -2.5rem;
-  left: 0;
-  margin: 0;
-  opacity: 0.6;
-  position: absolute;
-  text-transform: uppercase;
 }
 
 .hero__marquee {
@@ -523,6 +694,14 @@ img {
   background: var(--cream);
   min-height: 100svh;
   position: relative;
+}
+
+.why > .ambient-particles,
+.course > .ambient-particles {
+  --particle-a: rgba(240, 111, 114, 0.62);
+  --particle-b: rgba(242, 161, 184, 0.68);
+  --particle-c: rgba(8, 184, 117, 0.42);
+  --particle-d: rgba(59, 39, 140, 0.28);
 }
 
 .why::after {
@@ -599,6 +778,14 @@ img {
   padding: clamp(2rem, 4vw, 4.5rem) var(--page-padding)
     clamp(4rem, 8vw, 8rem);
   position: relative;
+}
+
+.lauren > .ambient-particles,
+.donate > .ambient-particles {
+  --particle-a: rgba(242, 161, 184, 0.58);
+  --particle-b: rgba(240, 111, 114, 0.56);
+  --particle-c: rgba(223, 243, 189, 0.54);
+  --particle-d: rgba(255, 253, 247, 0.48);
 }
 
 .lauren::before {
@@ -800,10 +987,6 @@ img {
   max-width: 35rem;
 }
 
-.lauren__portrait-copy .text-link {
-  margin-top: 1rem;
-}
-
 .polaroid--together-two {
   --polaroid-angle: -4deg;
   --polaroid-delay: 900ms;
@@ -814,10 +997,50 @@ img {
   z-index: 5;
 }
 
+.memory-note {
+  align-self: center;
+  background: var(--pink);
+  box-shadow: 0.65rem 0.65rem 0 rgba(10, 21, 17, 0.22);
+  color: var(--ink);
+  margin: 0;
+  padding: clamp(1.4rem, 2.5vw, 2.4rem);
+  position: relative;
+  z-index: 8;
+}
+
+.memory-note p {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-size: clamp(1.65rem, 2.65vw, 3rem);
+  letter-spacing: -0.025em;
+  line-height: 0.98;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.memory-note--one {
+  grid-column: 1 / 4;
+  grid-row: 2;
+  rotate: -4deg;
+}
+
+.memory-note--two {
+  background: var(--mint);
+  grid-column: 10 / 13;
+  grid-row: 2;
+  rotate: 4deg;
+}
+
+.memory-note--three {
+  background: var(--coral);
+  grid-column: 6 / 9;
+  grid-row: 3;
+  rotate: -2deg;
+}
+
 .polaroid--view {
   --polaroid-angle: 6deg;
   --polaroid-delay: 1200ms;
-  grid-column: 8 / 12;
+  grid-column: 9 / 13;
   grid-row: 3;
   width: 100%;
   z-index: 4;
@@ -834,6 +1057,20 @@ img {
   padding: clamp(2rem, 4vw, 4.5rem) var(--page-padding)
     clamp(5rem, 9vw, 9rem);
   position: relative;
+}
+
+.goal > .ambient-particles {
+  --particle-a: rgba(242, 161, 184, 0.52);
+  --particle-b: rgba(240, 111, 114, 0.48);
+  --particle-c: rgba(223, 243, 189, 0.42);
+  --particle-d: rgba(255, 253, 247, 0.38);
+}
+
+.goal > :not(.ambient-particles),
+.course > :not(.ambient-particles),
+.donate > :not(.ambient-particles) {
+  position: relative;
+  z-index: 1;
 }
 
 .goal::before {
@@ -1303,12 +1540,12 @@ footer > a {
   }
 
   .hero__copy {
-    width: 60vw;
+    width: 56vw;
   }
 
   .hero__runner {
-    left: 75%;
-    width: min(46vw, 33rem);
+    left: 81%;
+    width: min(40vw, 32rem);
   }
 
   .why__inner,
@@ -1370,33 +1607,34 @@ footer > a {
 
   .hero {
     height: auto;
-    min-height: 54rem;
+    min-height: 64rem;
   }
 
   .hero__stage {
-    height: 54rem;
-    min-height: 54rem;
+    height: 64rem;
+    min-height: 64rem;
     padding: 2.2rem var(--page-padding) 6rem;
   }
 
   .hero__copy {
     max-width: none;
+    padding: 1.2rem 1.1rem 1.4rem;
     width: 100%;
   }
 
   .hero h1 {
-    font-size: clamp(4.6rem, 20.5vw, 7.1rem);
-    max-width: 6.8ch;
+    font-size: clamp(4.25rem, 17vw, 6.2rem);
+    max-width: 6.2ch;
   }
 
   .hero__intro {
-    max-width: 88%;
+    max-width: 100%;
   }
 
   .hero__runner {
     bottom: 2.8rem;
-    height: 62%;
-    left: 69%;
+    height: 45%;
+    left: 72%;
     width: 88vw;
   }
 
@@ -1410,7 +1648,7 @@ footer > a {
     flex-direction: column;
   }
 
-  .particle-hint {
+  .ambient-particles span:nth-child(n + 13) {
     display: none;
   }
 
@@ -1508,6 +1746,27 @@ footer > a {
     grid-row: auto;
     margin: 2rem 0;
     padding: 2rem 1.6rem 2.4rem;
+  }
+
+  .memory-note {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    rotate: 0deg;
+  }
+
+  .memory-note--one {
+    justify-self: start;
+    width: 88%;
+  }
+
+  .memory-note--two {
+    justify-self: end;
+    width: 84%;
+  }
+
+  .memory-note--three {
+    justify-self: center;
+    width: 90%;
   }
 
   .polaroid--view {
