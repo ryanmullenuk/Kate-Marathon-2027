@@ -39,12 +39,20 @@ function ScrollMotion() {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const hero = document.querySelector<HTMLElement>(".hero");
     const elements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-reveal]"),
     );
 
     if (reducedMotion) {
       elements.forEach((element) => element.classList.add("is-visible"));
+      hero?.style.setProperty("--hero-run-progress", "1");
+      hero?.style.setProperty("--hero-run-x", "0vw");
+      hero?.style.setProperty("--hero-run-y", "0px");
+      hero?.style.setProperty("--hero-run-rotate", "0deg");
+      hero?.style.setProperty("--hero-run-opacity", "1");
+      hero?.style.setProperty("--hero-copy-opacity", "1");
+      hero?.style.setProperty("--hero-copy-shift", "0vw");
       return;
     }
 
@@ -77,6 +85,47 @@ function ScrollMotion() {
           "--scroll-offset",
           `${window.scrollY}px`,
         );
+
+        if (hero) {
+          const heroRect = hero.getBoundingClientRect();
+          const travel = Math.max(1, hero.offsetHeight - window.innerHeight);
+          const heroProgress = Math.min(
+            1,
+            Math.max(0, -heroRect.top / travel),
+          );
+          hero.style.setProperty(
+            "--hero-run-progress",
+            heroProgress.toFixed(4),
+          );
+          hero.style.setProperty(
+            "--hero-run-x",
+            `${(-50 + heroProgress * 50).toFixed(3)}vw`,
+          );
+          hero.style.setProperty(
+            "--hero-run-y",
+            `${(
+              Math.sin(heroProgress * Math.PI * 8) *
+              (1 - heroProgress) *
+              9
+            ).toFixed(2)}px`,
+          );
+          hero.style.setProperty(
+            "--hero-run-rotate",
+            `${(-6 + heroProgress * 6).toFixed(2)}deg`,
+          );
+          hero.style.setProperty(
+            "--hero-run-opacity",
+            (0.3 + heroProgress * 0.7).toFixed(3),
+          );
+          hero.style.setProperty(
+            "--hero-copy-opacity",
+            (1 - heroProgress * 0.86).toFixed(3),
+          );
+          hero.style.setProperty(
+            "--hero-copy-shift",
+            `${(-heroProgress * 5).toFixed(3)}vw`,
+          );
+        }
       });
     };
 
@@ -484,53 +533,58 @@ export default function Home() {
 
       <main id="main">
         <section className="hero" id="top">
-          <div className="hero__pattern hero__pattern--top" aria-hidden="true" />
-          <div
-            className="hero__pattern hero__pattern--bottom"
-            aria-hidden="true"
-          />
-
-          <figure className="hero__visual" aria-hidden="true">
-            <Image
-              src="/kate-hero.png"
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 800px) 100vw, 68vw"
+          <div className="hero__stage">
+            <div
+              className="hero__pattern hero__pattern--top"
+              aria-hidden="true"
             />
-          </figure>
+            <div
+              className="hero__pattern hero__pattern--bottom"
+              aria-hidden="true"
+            />
 
-          <div className="hero__copy">
-            <p className="eyebrow hero__eyebrow">
-              One runner · One lovely friend · One big goal
-            </p>
-            <h1>
-              <span>Kate runs</span>
-              <span className="outline">London</span>
-              <span>2027.</span>
-            </h1>
-            <p className="hero__intro">
-              Kate is taking on 26.2 miles for Young Epilepsy, raising
-              £3,000 in memory of her friend, Lauren Szumski.
-            </p>
-            <div className="hero__actions">
-              <a className="button" href={DONATION_URL}>
-                Donate now
-              </a>
-              <a className="text-link" href="#why">
-                Read Kate&apos;s reason <span aria-hidden="true">↓</span>
-              </a>
+            <figure className="hero__runner">
+              <Image
+                src="/kate-run-transparent.png"
+                alt="Illustration of Kate running with an outstretched arm and a joyful smile"
+                fill
+                priority
+                sizes="(max-width: 760px) 88vw, 42vw"
+              />
+            </figure>
+
+            <div className="hero__copy">
+              <p className="eyebrow hero__eyebrow">
+                One runner · One lovely friend · One big goal
+              </p>
+              <h1>
+                <span>Kate runs</span>
+                <span className="outline">London</span>
+                <span>2027.</span>
+              </h1>
+              <p className="hero__intro">
+                Kate is taking on 26.2 miles for Young Epilepsy, raising
+                £3,000 in memory of her friend, Lauren Szumski.
+              </p>
+              <div className="hero__actions">
+                <a className="button" href={DONATION_URL}>
+                  Donate now
+                </a>
+                <a className="text-link" href="#why">
+                  Read Kate&apos;s reason <span aria-hidden="true">↓</span>
+                </a>
+              </div>
+              <span className="particle-hint" aria-hidden="true">
+                Scroll to send Kate on her way
+              </span>
             </div>
-            <span className="particle-hint" aria-hidden="true">
-              Move or tap for a little extra energy
-            </span>
-          </div>
 
-          <div className="hero__marquee" aria-hidden="true">
-            <span>
-              26.2 MILES · FOR LAUREN · FOR YOUNG EPILEPSY · 26.2 MILES ·
-              FOR LAUREN · FOR YOUNG EPILEPSY ·
-            </span>
+            <div className="hero__marquee" aria-hidden="true">
+              <span>
+                26.2 MILES · FOR LAUREN · FOR YOUNG EPILEPSY · 26.2 MILES ·
+                FOR LAUREN · FOR YOUNG EPILEPSY ·
+              </span>
+            </div>
           </div>
         </section>
 
@@ -545,11 +599,20 @@ export default function Home() {
                 Running with
                 <span className="outline outline--green">purpose.</span>
               </h2>
-              <span
-                className="why__logo"
-                role="img"
-                aria-label="Young Epilepsy"
-              />
+              <a
+                className="why__logo-link"
+                href="https://www.youngepilepsy.org.uk/"
+                rel="noreferrer"
+                target="_blank"
+                aria-label="Visit the Young Epilepsy website"
+              >
+                <Image
+                  src="/young-epilepsy-green.png"
+                  alt="Young Epilepsy"
+                  width="1200"
+                  height="454"
+                />
+              </a>
             </div>
             <div className="why__copy" data-reveal="right">
               <p className="lead">
@@ -579,20 +642,80 @@ export default function Home() {
           <div className="lauren__orb lauren__orb--two" aria-hidden="true" />
           <div className="lauren__topline">
             <span className="section-number">02 / Lauren</span>
-            <span>Coming soon</span>
+            <span>More memories coming soon</span>
           </div>
           <h2 className="lauren__title" data-reveal="title">
             <span>Lauren&apos;s</span>
             <span className="outline outline--pink">story</span>
           </h2>
+          <div
+            className="polaroid-gallery"
+            data-reveal="polaroids"
+            aria-label="Photographs of Lauren and Kate"
+          >
+            <figure className="polaroid polaroid--portrait">
+              <div className="polaroid__photo polaroid__photo--portrait">
+                <Image
+                  src="/lauren-portrait.jpeg"
+                  alt="Lauren smiling by a window"
+                  fill
+                  sizes="(max-width: 760px) 70vw, 19vw"
+                />
+              </div>
+              <figcaption>Lauren</figcaption>
+            </figure>
+            <figure className="polaroid polaroid--together-one">
+              <div className="polaroid__photo">
+                <Image
+                  src="/kate-lauren-1.jpg"
+                  alt="Kate and Lauren smiling together"
+                  fill
+                  sizes="(max-width: 760px) 82vw, 29vw"
+                />
+              </div>
+              <figcaption>Kate &amp; Lauren</figcaption>
+            </figure>
+            <figure className="polaroid polaroid--summer">
+              <div className="polaroid__photo polaroid__photo--portrait">
+                <Image
+                  src="/lauren-summer.jpeg"
+                  alt="Lauren smiling with flowers by the water"
+                  fill
+                  sizes="(max-width: 760px) 55vw, 15vw"
+                />
+              </div>
+              <figcaption>Sunshine</figcaption>
+            </figure>
+            <figure className="polaroid polaroid--together-two">
+              <div className="polaroid__photo">
+                <Image
+                  src="/kate-lauren-2.jpg"
+                  alt="Kate and Lauren laughing together"
+                  fill
+                  sizes="(max-width: 760px) 82vw, 30vw"
+                />
+              </div>
+              <figcaption>Always laughing</figcaption>
+            </figure>
+            <figure className="polaroid polaroid--view">
+              <div className="polaroid__photo polaroid__photo--landscape">
+                <Image
+                  src="/lauren-view.jpeg"
+                  alt="Lauren sitting on a rock looking over the landscape"
+                  fill
+                  sizes="(max-width: 760px) 64vw, 22vw"
+                />
+              </div>
+              <figcaption>Adventures</figcaption>
+            </figure>
+          </div>
           <div className="lauren__bottom">
             <p className="lead" data-reveal="up">
               A life remembered with love.
             </p>
             <p data-reveal="up">
-              This full-width space will grow with photographs, memories and
-              the story of Lauren&apos;s life, shared by the people who knew
-              and loved her.
+              This space will continue to grow with memories and the story of
+              Lauren&apos;s life, shared by the people who knew and loved her.
             </p>
           </div>
         </section>

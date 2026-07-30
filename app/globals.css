@@ -350,15 +350,30 @@ img {
 }
 
 .hero {
+  --hero-copy-opacity: 1;
+  --hero-copy-shift: 0vw;
+  --hero-run-opacity: 0.3;
+  --hero-run-progress: 0;
+  --hero-run-rotate: -6deg;
+  --hero-run-x: -50vw;
+  --hero-run-y: 0px;
   background: var(--green);
-  height: calc(100svh - 7.8rem);
-  min-height: 36rem;
-  overflow: hidden;
-  padding: 2rem var(--page-padding) 5rem;
+  height: 165svh;
+  min-height: 65rem;
   position: relative;
 }
 
-.hero::after {
+.hero__stage {
+  background: var(--green);
+  height: calc(100svh - 5.25rem);
+  min-height: 36rem;
+  overflow: hidden;
+  padding: 2rem var(--page-padding) 5rem;
+  position: sticky;
+  top: 5.25rem;
+}
+
+.hero__stage::after {
   background:
     radial-gradient(circle, rgba(255, 253, 247, 0.9) 0 0.25rem, transparent 0.29rem);
   background-size: 2.1rem 2.1rem;
@@ -371,6 +386,43 @@ img {
   transform: rotate(9deg);
   width: 22rem;
   z-index: 1;
+}
+
+.hero__runner {
+  bottom: 2.9rem;
+  filter: drop-shadow(0 1.35rem 1.1rem rgba(10, 61, 46, 0.18));
+  height: calc(100% - 3.2rem);
+  left: 50%;
+  margin: 0;
+  opacity: var(--hero-run-opacity);
+  pointer-events: none;
+  position: absolute;
+  transform: translate3d(
+      calc(-50% + var(--hero-run-x)),
+      var(--hero-run-y),
+      0
+    )
+    rotate(var(--hero-run-rotate));
+  transform-origin: center bottom;
+  width: min(39vw, 34rem);
+  will-change: transform, opacity;
+  z-index: 3;
+}
+
+.hero__runner img {
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.hero__copy {
+  animation: hero-copy-in 850ms 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  max-width: 52rem;
+  opacity: var(--hero-copy-opacity);
+  position: relative;
+  transform: translate3d(var(--hero-copy-shift), 0, 0);
+  width: min(55vw, 52rem);
+  will-change: transform, opacity;
+  z-index: 4;
 }
 
 .hero__pattern {
@@ -396,44 +448,6 @@ img {
   right: -10%;
   transform: rotate(-5deg);
   width: clamp(34rem, 68vw, 78rem);
-}
-
-.hero__visual {
-  animation: hero-run-in 1.45s 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  bottom: 2.9rem;
-  height: calc(100% - 2.9rem);
-  margin: 0;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 16%, #000 100%);
-  pointer-events: none;
-  position: absolute;
-  right: -1.5vw;
-  width: min(70vw, 78rem);
-  z-index: 2;
-}
-
-.hero__visual img {
-  object-fit: contain;
-  object-position: right bottom;
-}
-
-@keyframes hero-run-in {
-  from {
-    opacity: 0;
-    transform: translateX(-18vw) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-.hero__copy {
-  animation: hero-copy-in 850ms 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  max-width: 52rem;
-  position: relative;
-  width: min(55vw, 52rem);
-  z-index: 4;
 }
 
 @keyframes hero-copy-in {
@@ -548,13 +562,25 @@ img {
   margin-bottom: 1.3rem;
 }
 
-.why__logo {
-  background: var(--ink);
+.why__logo-link {
   display: block;
-  height: clamp(4.1rem, 7vw, 6rem);
   margin-top: 2.5rem;
-  mask: url("/young-epilepsy-logo.png") left center / contain no-repeat;
+  position: relative;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
   width: clamp(11rem, 22vw, 20rem);
+}
+
+.why__logo-link img {
+  height: auto;
+  width: 100%;
+}
+
+.why__logo-link:hover,
+.why__logo-link:focus-visible {
+  opacity: 0.76;
+  transform: translateY(-0.35rem) rotate(-1deg);
 }
 
 .why__copy {
@@ -572,8 +598,7 @@ img {
   display: flex;
   flex-direction: column;
   isolation: isolate;
-  justify-content: space-between;
-  min-height: 100svh;
+  min-height: 165svh;
   overflow: hidden;
   padding: clamp(2rem, 4vw, 4.5rem) var(--page-padding)
     clamp(4rem, 8vw, 8rem);
@@ -643,6 +668,120 @@ img {
 .lauren__title span:last-child {
   margin-top: 0.08em;
   padding-left: 18vw;
+}
+
+.polaroid-gallery {
+  height: clamp(45rem, 66vw, 66rem);
+  margin: clamp(1rem, 3vw, 3rem) auto clamp(3rem, 7vw, 7rem);
+  max-width: 96rem;
+  position: relative;
+  width: 100%;
+  z-index: 3;
+}
+
+[data-reveal="polaroids"] {
+  opacity: 1;
+  transform: none;
+}
+
+.polaroid {
+  --polaroid-angle: 0deg;
+  --polaroid-delay: 0ms;
+  background: var(--white);
+  box-shadow:
+    0 1.6rem 3.2rem rgba(10, 21, 17, 0.25),
+    0 0.25rem 0.5rem rgba(10, 21, 17, 0.16);
+  color: var(--ink);
+  margin: 0;
+  opacity: 0;
+  padding: clamp(0.62rem, 1.1vw, 1rem) clamp(0.62rem, 1.1vw, 1rem)
+    clamp(1.15rem, 2.2vw, 2rem);
+  position: absolute;
+  transform: translateY(5rem) scale(0.7)
+    rotate(calc(var(--polaroid-angle) - 8deg));
+  transition:
+    opacity 650ms var(--polaroid-delay) cubic-bezier(0.22, 1, 0.36, 1),
+    transform 850ms var(--polaroid-delay) cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.polaroid-gallery.is-visible .polaroid {
+  opacity: 1;
+  transform: translateY(0) scale(1) rotate(var(--polaroid-angle));
+}
+
+.polaroid__photo {
+  aspect-ratio: 3 / 2;
+  background: var(--cream);
+  overflow: hidden;
+  position: relative;
+}
+
+.polaroid__photo--portrait {
+  aspect-ratio: 3 / 4;
+}
+
+.polaroid__photo--landscape {
+  aspect-ratio: 3 / 2;
+}
+
+.polaroid__photo img {
+  filter: saturate(0.96) contrast(0.98);
+  object-fit: cover;
+}
+
+.polaroid figcaption {
+  font-size: clamp(0.75rem, 1.2vw, 1rem);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-top: clamp(0.65rem, 1.2vw, 1rem);
+  text-align: center;
+}
+
+.polaroid--portrait {
+  --polaroid-angle: -7deg;
+  --polaroid-delay: 0ms;
+  left: 3%;
+  top: 8%;
+  width: min(19vw, 18rem);
+  z-index: 3;
+}
+
+.polaroid--together-one {
+  --polaroid-angle: 4deg;
+  --polaroid-delay: 300ms;
+  left: 27%;
+  top: 2%;
+  width: min(31vw, 31rem);
+  z-index: 2;
+}
+
+.polaroid--summer {
+  --polaroid-angle: 8deg;
+  --polaroid-delay: 600ms;
+  right: 4%;
+  top: 10%;
+  width: min(16vw, 15rem);
+  z-index: 4;
+}
+
+.polaroid--together-two {
+  --polaroid-angle: -4deg;
+  --polaroid-delay: 900ms;
+  left: 14%;
+  top: 51%;
+  width: min(32vw, 32rem);
+  z-index: 5;
+}
+
+.polaroid--view {
+  --polaroid-angle: 6deg;
+  --polaroid-delay: 1200ms;
+  right: 13%;
+  top: 50%;
+  width: min(25vw, 25rem);
+  z-index: 4;
 }
 
 .lauren__bottom {
@@ -1145,9 +1284,8 @@ footer > a {
     width: 60vw;
   }
 
-  .hero__visual {
-    right: -8vw;
-    width: 78vw;
+  .hero__runner {
+    width: min(46vw, 33rem);
   }
 
   .why__inner,
@@ -1208,10 +1346,15 @@ footer > a {
   }
 
   .hero {
-    height: auto;
-    min-height: 60rem;
-    padding-bottom: 6rem;
-    padding-top: 3.2rem;
+    height: 160svh;
+    min-height: 70rem;
+  }
+
+  .hero__stage {
+    height: calc(100svh - 4.4rem);
+    min-height: 40rem;
+    padding: 2.2rem var(--page-padding) 6rem;
+    top: 4.4rem;
   }
 
   .hero__copy {
@@ -1228,11 +1371,10 @@ footer > a {
     max-width: 88%;
   }
 
-  .hero__visual {
+  .hero__runner {
     bottom: 2.8rem;
-    height: 62%;
-    right: -25vw;
-    width: 125vw;
+    height: 69%;
+    width: 88vw;
   }
 
   .hero__pattern--bottom {
@@ -1267,8 +1409,7 @@ footer > a {
     font-size: clamp(4rem, 19vw, 6.3rem);
   }
 
-  .why__logo {
-    height: 4.4rem;
+  .why__logo-link {
     margin-top: 2rem;
     width: 14rem;
   }
@@ -1282,7 +1423,7 @@ footer > a {
   }
 
   .lauren {
-    min-height: 49rem;
+    min-height: auto;
     padding-top: 1.5rem;
   }
 
@@ -1304,6 +1445,42 @@ footer > a {
 
   .lauren__title span:last-child {
     padding-left: 8vw;
+  }
+
+  .polaroid-gallery {
+    display: grid;
+    gap: 1.6rem 0.8rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+    margin: 0 0 5rem;
+  }
+
+  .polaroid {
+    align-self: start;
+    inset: auto;
+    position: relative;
+    width: auto;
+  }
+
+  .polaroid--portrait {
+    margin-top: 2rem;
+  }
+
+  .polaroid--together-one,
+  .polaroid--together-two {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 88%;
+  }
+
+  .polaroid--summer {
+    margin-top: 4rem;
+  }
+
+  .polaroid--view {
+    grid-column: 2;
+    justify-self: stretch;
+    margin-top: -4rem;
   }
 
   .lauren__bottom {
