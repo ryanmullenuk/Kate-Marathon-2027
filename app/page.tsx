@@ -339,7 +339,7 @@ export default function Home() {
                 <span className="outline">London</span>
                 <span>2027.</span>
               </h1>
-              <p className="hero__intro">
+              <p className="hero__intro hero__intro--highlight">
                 Kate is taking on 26.2 miles for Young Epilepsy, raising
                 £3,000 in memory of her friend, Lauren Szumski.
               </p>

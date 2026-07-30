@@ -21,6 +21,7 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   assert.doesNotMatch(html, /particle-field/i);
   assert.doesNotMatch(html, /Move or tap for a little extra energy/i);
   assert.match(html, /src="\/kate-run-transparent\.png"/i);
+  assert.match(html, /hero__intro--highlight/i);
   assert.match(html, /aria-label="Visit the Young Epilepsy website"/i);
   assert.match(html, /class="polaroid-gallery"/i);
   assert.match(html, /Full of life\. Full of joy\./i);
