@@ -350,27 +350,19 @@ img {
 }
 
 .hero {
-  --hero-copy-opacity: 1;
-  --hero-copy-shift: 0vw;
-  --hero-run-opacity: 0.3;
-  --hero-run-progress: 0;
-  --hero-run-rotate: -6deg;
-  --hero-run-x: -50vw;
-  --hero-run-y: 0px;
   background: var(--green);
-  height: 165svh;
-  min-height: 65rem;
+  height: calc(100svh - 5.25rem);
+  min-height: 43rem;
   position: relative;
 }
 
 .hero__stage {
   background: var(--green);
-  height: calc(100svh - 5.25rem);
-  min-height: 36rem;
+  height: 100%;
+  min-height: inherit;
   overflow: hidden;
   padding: 2rem var(--page-padding) 5rem;
-  position: sticky;
-  top: 5.25rem;
+  position: relative;
 }
 
 .hero__stage::after {
@@ -389,23 +381,18 @@ img {
 }
 
 .hero__runner {
+  animation: hero-runner-arrive 1.35s 180ms cubic-bezier(0.16, 1, 0.3, 1)
+    both;
   bottom: 2.9rem;
   filter: drop-shadow(0 1.35rem 1.1rem rgba(10, 61, 46, 0.18));
   height: calc(100% - 3.2rem);
-  left: 50%;
+  left: 77%;
   margin: 0;
-  opacity: var(--hero-run-opacity);
   pointer-events: none;
   position: absolute;
-  transform: translate3d(
-      calc(-50% + var(--hero-run-x)),
-      var(--hero-run-y),
-      0
-    )
-    rotate(var(--hero-run-rotate));
+  transform: translate3d(-50%, 0, 0);
   transform-origin: center bottom;
   width: min(39vw, 34rem);
-  will-change: transform, opacity;
   z-index: 3;
 }
 
@@ -417,11 +404,8 @@ img {
 .hero__copy {
   animation: hero-copy-in 850ms 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
   max-width: 52rem;
-  opacity: var(--hero-copy-opacity);
   position: relative;
-  transform: translate3d(var(--hero-copy-shift), 0, 0);
   width: min(55vw, 52rem);
-  will-change: transform, opacity;
   z-index: 4;
 }
 
@@ -454,6 +438,18 @@ img {
   from {
     opacity: 0;
     transform: translateY(2.5rem);
+  }
+}
+
+@keyframes hero-runner-arrive {
+  from {
+    opacity: 0;
+    transform: translate3d(calc(-50% - 42vw), 0, 0) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
   }
 }
 
@@ -671,7 +667,10 @@ img {
 }
 
 .polaroid-gallery {
-  height: clamp(45rem, 66vw, 66rem);
+  align-items: start;
+  display: grid;
+  gap: clamp(4rem, 7vw, 7rem) clamp(0.75rem, 1.8vw, 1.75rem);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   margin: clamp(1rem, 3vw, 3rem) auto clamp(3rem, 7vw, 7rem);
   max-width: 96rem;
   position: relative;
@@ -696,7 +695,7 @@ img {
   opacity: 0;
   padding: clamp(0.62rem, 1.1vw, 1rem) clamp(0.62rem, 1.1vw, 1rem)
     clamp(1.15rem, 2.2vw, 2rem);
-  position: absolute;
+  position: relative;
   transform: translateY(5rem) scale(0.7)
     rotate(calc(var(--polaroid-angle) - 8deg));
   transition:
@@ -730,75 +729,98 @@ img {
   object-fit: cover;
 }
 
-.polaroid figcaption {
-  font-size: clamp(0.75rem, 1.2vw, 1rem);
-  font-style: italic;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  margin-top: clamp(0.65rem, 1.2vw, 1rem);
-  text-align: center;
-}
-
 .polaroid--portrait {
   --polaroid-angle: -7deg;
   --polaroid-delay: 0ms;
-  left: 3%;
-  top: 8%;
-  width: min(19vw, 18rem);
+  grid-column: 1 / 4;
+  grid-row: 1;
+  margin-top: 3rem;
+  width: 100%;
   z-index: 3;
 }
 
 .polaroid--together-one {
   --polaroid-angle: 4deg;
   --polaroid-delay: 300ms;
-  left: 27%;
-  top: 2%;
-  width: min(31vw, 31rem);
+  grid-column: 4 / 9;
+  grid-row: 1;
+  width: 100%;
   z-index: 2;
 }
 
 .polaroid--summer {
   --polaroid-angle: 8deg;
   --polaroid-delay: 600ms;
-  right: 4%;
-  top: 10%;
-  width: min(16vw, 15rem);
+  grid-column: 10 / 13;
+  grid-row: 1;
+  margin-top: 4.5rem;
+  width: 82%;
   z-index: 4;
+}
+
+.lauren__portrait-copy {
+  align-self: center;
+  background: var(--cream);
+  box-shadow: 1.1rem 1.1rem 0 var(--pink);
+  color: var(--ink);
+  grid-column: 4 / 10;
+  grid-row: 2;
+  justify-self: center;
+  max-width: 43rem;
+  padding: clamp(2rem, 4.5vw, 4.5rem);
+  position: relative;
+  width: 100%;
+  z-index: 7;
+}
+
+.lauren__portrait-copy::before {
+  background: var(--green);
+  border-radius: 50%;
+  content: "";
+  height: 1.35rem;
+  position: absolute;
+  right: 1.3rem;
+  top: 1.3rem;
+  width: 1.35rem;
+}
+
+.lauren__portrait-copy h3 {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-size: clamp(3.25rem, 6vw, 6.25rem);
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  margin: 1rem 0 1.8rem;
+  max-width: 7ch;
+  text-transform: uppercase;
+}
+
+.lauren__portrait-copy > p:not(.eyebrow) {
+  font-size: clamp(1rem, 1.45vw, 1.2rem);
+  margin: 0 0 1rem;
+  max-width: 35rem;
+}
+
+.lauren__portrait-copy .text-link {
+  margin-top: 1rem;
 }
 
 .polaroid--together-two {
   --polaroid-angle: -4deg;
   --polaroid-delay: 900ms;
-  left: 14%;
-  top: 51%;
-  width: min(32vw, 32rem);
+  grid-column: 1 / 6;
+  grid-row: 3;
+  margin-top: 2rem;
+  width: 100%;
   z-index: 5;
 }
 
 .polaroid--view {
   --polaroid-angle: 6deg;
   --polaroid-delay: 1200ms;
-  right: 13%;
-  top: 50%;
-  width: min(25vw, 25rem);
+  grid-column: 8 / 12;
+  grid-row: 3;
+  width: 100%;
   z-index: 4;
-}
-
-.lauren__bottom {
-  align-items: end;
-  display: grid;
-  gap: 3rem;
-  grid-template-columns: 1fr minmax(18rem, 31rem);
-  position: relative;
-  z-index: 2;
-}
-
-.lauren__bottom p {
-  margin: 0;
-}
-
-.lauren__bottom > p:last-child {
-  color: rgba(255, 255, 255, 0.76);
 }
 
 .goal {
@@ -1285,6 +1307,7 @@ footer > a {
   }
 
   .hero__runner {
+    left: 75%;
     width: min(46vw, 33rem);
   }
 
@@ -1346,15 +1369,14 @@ footer > a {
   }
 
   .hero {
-    height: 160svh;
-    min-height: 70rem;
+    height: auto;
+    min-height: 54rem;
   }
 
   .hero__stage {
-    height: calc(100svh - 4.4rem);
-    min-height: 40rem;
+    height: 54rem;
+    min-height: 54rem;
     padding: 2.2rem var(--page-padding) 6rem;
-    top: 4.4rem;
   }
 
   .hero__copy {
@@ -1373,7 +1395,8 @@ footer > a {
 
   .hero__runner {
     bottom: 2.8rem;
-    height: 69%;
+    height: 62%;
+    left: 69%;
     width: 88vw;
   }
 
@@ -1457,12 +1480,14 @@ footer > a {
 
   .polaroid {
     align-self: start;
+    grid-row: auto;
     inset: auto;
     position: relative;
     width: auto;
   }
 
   .polaroid--portrait {
+    grid-column: 1;
     margin-top: 2rem;
   }
 
@@ -1474,21 +1499,22 @@ footer > a {
   }
 
   .polaroid--summer {
+    grid-column: 2;
     margin-top: 4rem;
   }
 
+  .lauren__portrait-copy {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin: 2rem 0;
+    padding: 2rem 1.6rem 2.4rem;
+  }
+
   .polaroid--view {
-    grid-column: 2;
-    justify-self: stretch;
-    margin-top: -4rem;
-  }
-
-  .lauren__bottom {
-    display: block;
-  }
-
-  .lauren__bottom > p:last-child {
-    margin-top: 2rem;
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: 0;
+    width: 72%;
   }
 
   .goal {
