@@ -2,21 +2,27 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
+import { marathonRoute } from "./marathon-route";
 
 const DONATION_URL = "#donate";
-const FUNDRAISING_TARGET: number = 3000;
+const FUNDRAISING_TARGET = 3000;
 const AMOUNT_RAISED: number = 0;
 const TRAINER_COUNT = 10;
 
 type Particle = {
   x: number;
   y: number;
+  vx: number;
+  vy: number;
   radius: number;
-  speedX: number;
-  speedY: number;
-  drift: number;
+  gravity: number;
+  drag: number;
+  life: number;
+  maxLife: number;
   colour: string;
-  alpha: number;
+  rotation: number;
+  spin: number;
+  shape: 0 | 1 | 2;
 };
 
 const particleColours = [
@@ -28,7 +34,68 @@ const particleColours = [
   "#08b875",
 ];
 
-function ParticleField() {
+function ScrollMotion() {
+  useEffect(() => {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const elements = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-reveal]"),
+    );
+
+    if (reducedMotion) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    let frame = 0;
+    const updateScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const maximum =
+          document.documentElement.scrollHeight - window.innerHeight;
+        const progress = maximum > 0 ? window.scrollY / maximum : 0;
+        document.documentElement.style.setProperty(
+          "--scroll-progress",
+          progress.toFixed(4),
+        );
+        document.documentElement.style.setProperty(
+          "--scroll-offset",
+          `${window.scrollY}px`,
+        );
+      });
+    };
+
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    window.addEventListener("resize", updateScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("resize", updateScroll);
+    };
+  }, []);
+
+  return null;
+}
+
+function InteractiveParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -38,28 +105,14 @@ function ParticleField() {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    const reduceMotion = window.matchMedia(
+    const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    const pointer = { x: -1000, y: -1000 };
     let particles: Particle[] = [];
     let animationId = 0;
     let width = 0;
     let height = 0;
-
-    const createParticle = (): Particle => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      radius: 2 + Math.random() * 10,
-      speedX: (Math.random() - 0.5) * 0.22,
-      speedY: -0.08 - Math.random() * 0.26,
-      drift: Math.random() * Math.PI * 2,
-      colour:
-        particleColours[
-          Math.floor(Math.random() * particleColours.length)
-        ],
-      alpha: 0.12 + Math.random() * 0.22,
-    });
+    let lastTrail = { x: -100, y: -100, time: 0 };
 
     const resize = () => {
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -70,182 +123,151 @@ function ParticleField() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const desiredCount = Math.max(18, Math.min(42, Math.round(width / 38)));
-      particles = Array.from({ length: desiredCount }, createParticle);
     };
 
-    const draw = (time = 0) => {
+    const createBurst = (
+      x: number,
+      y: number,
+      count: number,
+      strength: number,
+    ) => {
+      if (reducedMotion) return;
+
+      for (let index = 0; index < count; index += 1) {
+        const angle = Math.PI * (1.08 + Math.random() * 0.84);
+        const speed = strength * (0.55 + Math.random() * 0.8);
+        const life = 42 + Math.random() * 42;
+
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.4,
+          vy: Math.sin(angle) * speed - Math.random() * strength * 0.65,
+          radius: 2.5 + Math.random() * 6.5,
+          gravity: 0.11 + Math.random() * 0.08,
+          drag: 0.982 + Math.random() * 0.01,
+          life,
+          maxLife: life,
+          colour:
+            particleColours[
+              Math.floor(Math.random() * particleColours.length)
+            ],
+          rotation: Math.random() * Math.PI,
+          spin: (Math.random() - 0.5) * 0.2,
+          shape: Math.floor(Math.random() * 3) as 0 | 1 | 2,
+        });
+      }
+
+      if (particles.length > 320) particles = particles.slice(-320);
+    };
+
+    const drawParticle = (particle: Particle) => {
+      const alpha = Math.max(0, particle.life / particle.maxLife);
+      context.save();
+      context.globalAlpha = Math.min(0.92, alpha * 1.4);
+      context.fillStyle = particle.colour;
+      context.translate(particle.x, particle.y);
+      context.rotate(particle.rotation);
+
+      if (particle.shape === 0) {
+        context.beginPath();
+        context.arc(0, 0, particle.radius, 0, Math.PI * 2);
+        context.fill();
+      } else if (particle.shape === 1) {
+        context.fillRect(
+          -particle.radius,
+          -particle.radius,
+          particle.radius * 2,
+          particle.radius * 2,
+        );
+      } else {
+        context.beginPath();
+        context.moveTo(0, -particle.radius * 1.55);
+        context.lineTo(particle.radius * 0.5, -particle.radius * 0.5);
+        context.lineTo(particle.radius * 1.55, 0);
+        context.lineTo(particle.radius * 0.5, particle.radius * 0.5);
+        context.lineTo(0, particle.radius * 1.55);
+        context.lineTo(-particle.radius * 0.5, particle.radius * 0.5);
+        context.lineTo(-particle.radius * 1.55, 0);
+        context.lineTo(-particle.radius * 0.5, -particle.radius * 0.5);
+        context.closePath();
+        context.fill();
+      }
+
+      context.restore();
+    };
+
+    const animate = () => {
       context.clearRect(0, 0, width, height);
 
       particles.forEach((particle) => {
-        if (!reduceMotion) {
-          particle.drift += 0.004;
-          particle.x += particle.speedX + Math.sin(particle.drift) * 0.08;
-          particle.y += particle.speedY;
-
-          const distanceX = particle.x - pointer.x;
-          const distanceY = particle.y - pointer.y;
-          const distance = Math.hypot(distanceX, distanceY);
-          if (distance < 100 && distance > 0) {
-            particle.x += (distanceX / distance) * 0.45;
-            particle.y += (distanceY / distance) * 0.45;
-          }
-
-          if (particle.y < -particle.radius * 2) {
-            particle.y = height + particle.radius * 2;
-            particle.x = Math.random() * width;
-          }
-          if (particle.x < -30) particle.x = width + 30;
-          if (particle.x > width + 30) particle.x = -30;
-        }
-
-        const pulse = reduceMotion
-          ? 1
-          : 0.88 + Math.sin(time * 0.0006 + particle.drift) * 0.12;
-        context.beginPath();
-        context.fillStyle = particle.colour;
-        context.globalAlpha = particle.alpha * pulse;
-        context.arc(
-          particle.x,
-          particle.y,
-          particle.radius * pulse,
-          0,
-          Math.PI * 2,
-        );
-        context.fill();
+        particle.vx *= particle.drag;
+        particle.vy = particle.vy * particle.drag + particle.gravity;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.rotation += particle.spin;
+        particle.life -= 1;
+        drawParticle(particle);
       });
 
-      context.globalAlpha = 1;
-      if (!reduceMotion) animationId = requestAnimationFrame(draw);
+      particles = particles.filter(
+        (particle) =>
+          particle.life > 0 &&
+          particle.y < height + 40 &&
+          particle.x > -40 &&
+          particle.x < width + 40,
+      );
+      animationId = requestAnimationFrame(animate);
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      createBurst(event.clientX, event.clientY, 28, 7.4);
     };
 
     const onPointerMove = (event: PointerEvent) => {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-    };
+      const now = performance.now();
+      const distance = Math.hypot(
+        event.clientX - lastTrail.x,
+        event.clientY - lastTrail.y,
+      );
 
-    const onPointerLeave = () => {
-      pointer.x = -1000;
-      pointer.y = -1000;
+      if (now - lastTrail.time > 38 && distance > 20) {
+        createBurst(event.clientX, event.clientY, 2, 2.8);
+        lastTrail = { x: event.clientX, y: event.clientY, time: now };
+      }
     };
 
     resize();
-    draw();
+    animationId = requestAnimationFrame(animate);
     window.addEventListener("resize", resize);
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.documentElement.addEventListener("pointerleave", onPointerLeave);
 
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
-      document.documentElement.removeEventListener(
-        "pointerleave",
-        onPointerLeave,
-      );
     };
   }, []);
 
   return <canvas className="particle-field" ref={canvasRef} aria-hidden="true" />;
 }
 
-const startRoutes: [number, number][][] = [
-  [
-    [51.4764, -0.003],
-    [51.4746, 0.007],
-    [51.4714, 0.018],
-    [51.479, 0.039],
-    [51.4896, 0.066],
-  ],
-  [
-    [51.472, -0.008],
-    [51.4712, 0.004],
-    [51.4714, 0.018],
-    [51.479, 0.039],
-    [51.4896, 0.066],
-  ],
-  [
-    [51.4689, -0.014],
-    [51.4699, 0.002],
-    [51.4714, 0.018],
-    [51.479, 0.039],
-    [51.4896, 0.066],
-  ],
-];
-
-const marathonRoute: [number, number][] = [
-  [51.4896, 0.066],
-  [51.4892, 0.055],
-  [51.4868, 0.042],
-  [51.4842, 0.029],
-  [51.4824, 0.015],
-  [51.4828, 0.001],
-  [51.4834, -0.008],
-  [51.4814, -0.011],
-  [51.4798, -0.008],
-  [51.4825, -0.004],
-  [51.4812, -0.019],
-  [51.4817, -0.032],
-  [51.4864, -0.045],
-  [51.4931, -0.052],
-  [51.5009, -0.055],
-  [51.5067, -0.049],
-  [51.5087, -0.038],
-  [51.5055, -0.029],
-  [51.4997, -0.033],
-  [51.4952, -0.043],
-  [51.492, -0.052],
-  [51.4968, -0.057],
-  [51.4991, -0.064],
-  [51.5012, -0.07],
-  [51.5034, -0.074],
-  [51.5055, -0.0754],
-  [51.5102, -0.075],
-  [51.5106, -0.064],
-  [51.5101, -0.052],
-  [51.5104, -0.04],
-  [51.5108, -0.028],
-  [51.5076, -0.022],
-  [51.5026, -0.021],
-  [51.4962, -0.016],
-  [51.4898, -0.011],
-  [51.4867, -0.007],
-  [51.491, -0.002],
-  [51.4983, -0.003],
-  [51.5034, -0.011],
-  [51.5053, -0.018],
-  [51.5031, -0.021],
-  [51.5009, -0.017],
-  [51.5035, -0.012],
-  [51.5076, -0.022],
-  [51.5104, -0.04],
-  [51.5105, -0.055],
-  [51.5102, -0.075],
-  [51.5092, -0.091],
-  [51.509, -0.106],
-  [51.5077, -0.118],
-  [51.5027, -0.123],
-  [51.5008, -0.126],
-  [51.5009, -0.132],
-  [51.5014, -0.137],
-  [51.5019, -0.141],
-  [51.5031, -0.139],
-  [51.5038, -0.134],
-];
-
 const routeLandmarks: {
   label: string;
   position: [number, number];
   direction?: "top" | "bottom" | "left" | "right";
 }[] = [
-  { label: "Three starts", position: [51.473, 0.002], direction: "left" },
-  { label: "Woolwich", position: [51.4896, 0.066], direction: "right" },
-  { label: "Cutty Sark", position: [51.4814, -0.011], direction: "bottom" },
-  { label: "Tower Bridge", position: [51.5076, -0.0752], direction: "left" },
-  { label: "Canary Wharf", position: [51.5035, -0.016], direction: "right" },
-  { label: "Tower Hill", position: [51.5102, -0.075], direction: "top" },
-  { label: "The Mall", position: [51.5038, -0.134], direction: "left" },
+  { label: "Woolwich", position: [51.488478, 0.06272], direction: "right" },
+  { label: "Cutty Sark", position: [51.481434, -0.010297], direction: "bottom" },
+  { label: "Tower Bridge", position: [51.502376, -0.077556], direction: "left" },
+  { label: "Canary Wharf", position: [51.5043, -0.012818], direction: "right" },
+  { label: "Tower Hill", position: [51.509922, -0.074402], direction: "top" },
+  { label: "The Mall", position: [51.503004, -0.137799], direction: "left" },
 ];
+
+const startAreaPosition: [number, number] = [51.4713, 0.0085];
 
 function RouteMap() {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -275,31 +297,12 @@ function RouteMap() {
 
       const routeOutline = L.polyline(marathonRoute, {
         color: "#fffdf7",
-        opacity: 0.94,
+        opacity: 0.96,
         weight: 12,
         lineCap: "round",
         lineJoin: "round",
         interactive: false,
       }).addTo(map);
-
-      startRoutes.forEach((route) => {
-        L.polyline(route, {
-          color: "#fffdf7",
-          opacity: 0.9,
-          weight: 9,
-          lineCap: "round",
-          lineJoin: "round",
-          interactive: false,
-        }).addTo(map);
-        L.polyline(route, {
-          color: "#f06f72",
-          opacity: 0.96,
-          weight: 4,
-          lineCap: "round",
-          lineJoin: "round",
-          interactive: false,
-        }).addTo(map);
-      });
 
       L.polyline(marathonRoute, {
         color: "#f06f72",
@@ -320,13 +323,31 @@ function RouteMap() {
         interactive: false,
       }).addTo(map);
 
+      const startArea = L.circleMarker(startAreaPosition, {
+        className: "route-point route-point--context",
+        color: "#fffdf7",
+        fillColor: "#08b875",
+        fillOpacity: 1,
+        radius: 7,
+        weight: 3,
+      })
+        .addTo(map)
+        .bindTooltip("Start areas", {
+          className: "route-label route-label--start",
+          direction: "bottom",
+          offset: [0, 8],
+          opacity: 1,
+          permanent: true,
+        });
+
       routeLandmarks.forEach((landmark, index) => {
+        const isFinish = index === routeLandmarks.length - 1;
         L.circleMarker(landmark.position, {
-          className: index === 0 ? "route-point route-point--start" : "route-point",
+          className: "route-point",
           color: "#fffdf7",
-          fillColor: index === routeLandmarks.length - 1 ? "#3b278c" : "#205b44",
+          fillColor: isFinish ? "#3b278c" : "#205b44",
           fillOpacity: 1,
-          radius: index === 0 || index === routeLandmarks.length - 1 ? 7 : 5,
+          radius: index === 0 || isFinish ? 7 : 5,
           weight: 3,
         })
           .addTo(map)
@@ -339,9 +360,10 @@ function RouteMap() {
           });
       });
 
-      map.fitBounds(routeOutline.getBounds(), {
-        paddingBottomRight: [28, 28],
-        paddingTopLeft: [28, 28],
+      const mapBounds = routeOutline.getBounds().extend(startArea.getLatLng());
+      map.fitBounds(mapBounds, {
+        paddingBottomRight: [34, 34],
+        paddingTopLeft: [34, 34],
       });
 
       requestAnimationFrame(() => map.invalidateSize());
@@ -357,16 +379,16 @@ function RouteMap() {
   }, []);
 
   return (
-    <div className="route-map">
+    <div className="route-map" data-reveal="scale">
       <div className="route-map__badge">Detailed course overview</div>
       <div
         className="route-map__canvas"
         ref={mapRef}
-        aria-label="Detailed London map showing the London Marathon course from its three start areas, through Woolwich, Greenwich, Tower Bridge and Canary Wharf, to the finish on The Mall"
+        aria-label="Detailed London map showing the London Marathon course from Woolwich, through Greenwich, Tower Bridge and Canary Wharf, to the finish on The Mall"
         role="img"
       />
       <div className="route-map__caption" aria-hidden="true">
-        <span>Start · Blackheath</span>
+        <span>Start areas shown for context · route mapped from Woolwich</span>
         <span>Finish · The Mall</span>
       </div>
     </div>
@@ -388,7 +410,11 @@ function TrainerTracker() {
   );
 
   return (
-    <div className="tracker" aria-label="Fundraising progress">
+    <div
+      className="tracker"
+      aria-label="Fundraising progress"
+      data-reveal="up"
+    >
       <div className="tracker__numbers">
         <div>
           <span>Raised so far</span>
@@ -411,6 +437,7 @@ function TrainerTracker() {
             style={
               {
                 "--fill-right": `${100 - fill * 100}%`,
+                "--trainer-delay": `${index * 55}ms`,
               } as React.CSSProperties
             }
           />
@@ -428,10 +455,12 @@ function TrainerTracker() {
 export default function Home() {
   return (
     <>
+      <ScrollMotion />
+      <InteractiveParticles />
+
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <ParticleField />
 
       <div className="announcement">
         <span>London Marathon 2027 · In memory of Lauren Szumski</span>
@@ -445,8 +474,8 @@ export default function Home() {
         <nav aria-label="Main navigation">
           <a href="#why">Why</a>
           <a href="#lauren">Lauren</a>
-          <a href="#route">The route</a>
           <a href="#goal">The goal</a>
+          <a href="#route">The route</a>
         </nav>
         <a className="button button--small" href={DONATION_URL}>
           Donate now
@@ -455,8 +484,26 @@ export default function Home() {
 
       <main id="main">
         <section className="hero" id="top">
+          <div className="hero__pattern hero__pattern--top" aria-hidden="true" />
+          <div
+            className="hero__pattern hero__pattern--bottom"
+            aria-hidden="true"
+          />
+
+          <figure className="hero__visual" aria-hidden="true">
+            <Image
+              src="/kate-hero.png"
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 800px) 100vw, 68vw"
+            />
+          </figure>
+
           <div className="hero__copy">
-            <p className="eyebrow">One runner · One lovely friend · One big goal</p>
+            <p className="eyebrow hero__eyebrow">
+              One runner · One lovely friend · One big goal
+            </p>
             <h1>
               <span>Kate runs</span>
               <span className="outline">London</span>
@@ -474,19 +521,10 @@ export default function Home() {
                 Read Kate&apos;s reason <span aria-hidden="true">↓</span>
               </a>
             </div>
+            <span className="particle-hint" aria-hidden="true">
+              Move or tap for a little extra energy
+            </span>
           </div>
-
-          <figure className="hero__art">
-            <div className="hero__image-frame">
-              <Image
-                src="/kate-hero.png"
-                alt="Illustration of Kate running with an outstretched arm and a joyful smile"
-                width="1003"
-                height="1568"
-              />
-            </div>
-            <figcaption>Training now · London bound</figcaption>
-          </figure>
 
           <div className="hero__marquee" aria-hidden="true">
             <span>
@@ -496,66 +534,82 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="why section-grid" id="why">
-          <div className="section-number">01 / Why</div>
-          <div className="why__headline">
-            <p className="eyebrow">The reason behind every mile</p>
-            <h2>
-              Running with
-              <span className="outline outline--green">purpose.</span>
-            </h2>
-          </div>
-          <div className="why__copy">
-            <p className="lead">
-              This is more than a marathon. Kate is running to remember
-              Lauren, to celebrate the warmth she brought to the people around
-              her, and to help young people living with epilepsy.
-            </p>
-            <p>
-              Young Epilepsy says around 100,000 children and young people in
-              the UK have epilepsy. Every donation can help the charity support
-              more young people and their families.
-            </p>
-            <a
-              className="text-link"
-              href="https://www.youngepilepsy.org.uk/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Learn about Young Epilepsy <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-        </section>
-
-        <section className="lauren section-grid" id="lauren">
-          <div className="section-number">02 / Lauren</div>
-          <div className="lauren__card">
-            <div className="lauren__copy">
-              <p className="eyebrow">A life remembered with love</p>
-              <h2>Lauren&apos;s story</h2>
-              <div className="coming-soon">Coming soon</div>
-              <p>
-                This space will grow with photographs, memories and the story of
-                Lauren&apos;s life, shared by the people who knew and loved her.
+        <section className="why" id="why">
+          <div className="why__inner">
+            <div className="section-number" data-reveal="left">
+              01 / Why
+            </div>
+            <div className="why__headline" data-reveal="up">
+              <p className="eyebrow">The reason behind every mile</p>
+              <h2>
+                Running with
+                <span className="outline outline--green">purpose.</span>
+              </h2>
+              <span
+                className="why__logo"
+                role="img"
+                aria-label="Young Epilepsy"
+              />
+            </div>
+            <div className="why__copy" data-reveal="right">
+              <p className="lead">
+                This is more than a marathon. Kate is running to remember
+                Lauren, to celebrate the warmth she brought to the people
+                around her, and to help young people living with epilepsy.
               </p>
-            </div>
-            <div className="lauren__garden" aria-hidden="true">
-              <span>Memories, photographs and Lauren&apos;s story</span>
+              <p>
+                Young Epilepsy says around 100,000 children and young people in
+                the UK have epilepsy. Every donation can help the charity
+                support more young people and their families.
+              </p>
+              <a
+                className="text-link"
+                href="https://www.youngepilepsy.org.uk/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Learn about Young Epilepsy <span aria-hidden="true">↗</span>
+              </a>
             </div>
           </div>
         </section>
 
-        <section className="goal section-grid" id="goal">
-          <div className="section-number">03 / The goal</div>
-          <div className="goal__heading">
-            <p className="eyebrow">Help turn every trainer pink</p>
+        <section className="lauren" id="lauren">
+          <div className="lauren__orb lauren__orb--one" aria-hidden="true" />
+          <div className="lauren__orb lauren__orb--two" aria-hidden="true" />
+          <div className="lauren__topline">
+            <span className="section-number">02 / Lauren</span>
+            <span>Coming soon</span>
+          </div>
+          <h2 className="lauren__title" data-reveal="title">
+            <span>Lauren&apos;s</span>
+            <span className="outline outline--pink">story</span>
+          </h2>
+          <div className="lauren__bottom">
+            <p className="lead" data-reveal="up">
+              A life remembered with love.
+            </p>
+            <p data-reveal="up">
+              This full-width space will grow with photographs, memories and
+              the story of Lauren&apos;s life, shared by the people who knew
+              and loved her.
+            </p>
+          </div>
+        </section>
+
+        <section className="goal" id="goal">
+          <div className="goal__topline">
+            <span className="section-number">03 / The goal</span>
+            <span>Help turn every trainer pink</span>
+          </div>
+          <div className="goal__heading" data-reveal="title">
             <h2>
-              £3,000.
-              <span className="outline outline--cream">Together.</span>
+              £3,000
+              <span className="outline outline--cream">together.</span>
             </h2>
           </div>
           <TrainerTracker />
-          <div className="goal__note">
+          <div className="goal__note" data-reveal="up">
             <p>
               The tracker will be updated as donations arrive. Ten trainers,
               £300 each, all the way to the finish line.
@@ -567,32 +621,35 @@ export default function Home() {
         </section>
 
         <section className="course" id="route">
-          <div className="course__intro section-grid">
-            <div className="section-number">04 / The course</div>
-            <div>
+          <div className="course__intro">
+            <div className="section-number" data-reveal="left">
+              04 / The course
+            </div>
+            <div data-reveal="up">
               <p className="eyebrow">Greenwich to The Mall</p>
               <h2>
                 A city in
                 <span className="outline outline--green">motion.</span>
               </h2>
             </div>
-            <p className="lead">
-              The famous 26.2-mile route brings the sights, sound and colour of
-              London together, with huge crowd support from south-east London
-              to the finish on The Mall.
+            <p className="lead" data-reveal="right">
+              The famous 26.2-mile route brings the sights, sound and colour
+              of London together, with huge crowd support from south-east
+              London to the finish on The Mall.
             </p>
           </div>
 
           <div className="course__stages">
-            <article>
+            <article data-reveal="up">
               <span>Start → Mile 7</span>
               <h3>Greenwich & Cutty Sark</h3>
               <p>
-                Three start lines join before Mile Three in Woolwich, before the
-                route passes Charlton, Greenwich, Deptford and the Cutty Sark.
+                Three start lines join before Mile Three in Woolwich, before
+                the route passes Charlton, Greenwich, Deptford and the Cutty
+                Sark.
               </p>
             </article>
-            <article>
+            <article data-reveal="up">
               <span>Miles 7 → 13.1</span>
               <h3>Tower Bridge</h3>
               <p>
@@ -600,7 +657,7 @@ export default function Home() {
                 one of the loudest and most memorable parts of the course.
               </p>
             </article>
-            <article>
+            <article data-reveal="up">
               <span>Miles 13 → 21</span>
               <h3>Docklands & Canary Wharf</h3>
               <p>
@@ -608,7 +665,7 @@ export default function Home() {
                 Westferry, Mudchute, Docklands and Canary Wharf.
               </p>
             </article>
-            <article>
+            <article data-reveal="up">
               <span>Final five miles</span>
               <h3>Westminster & The Mall</h3>
               <p>
@@ -620,13 +677,14 @@ export default function Home() {
 
           <div className="map-wrap">
             <RouteMap />
-            <div className="map-copy">
+            <div className="map-copy" data-reveal="right">
               <span className="map-copy__distance">26.2</span>
               <span>miles through London</span>
               <p>
-                A detailed street-map overview of the established London
-                Marathon course. Final 2027 arrangements will be checked
-                against the organiser&apos;s latest guidance.
+                The pink line now follows the detailed mapped course from
+                Woolwich to The Mall. The three Blackheath and Greenwich start
+                areas are shown for context without adding an unverified route
+                spur.
               </p>
               <a
                 className="text-link"
@@ -642,16 +700,22 @@ export default function Home() {
         </section>
 
         <section className="donate" id="donate">
-          <p className="eyebrow">Be part of Kate&apos;s 26.2 miles</p>
-          <h2>
+          <p className="eyebrow" data-reveal="up">
+            Be part of Kate&apos;s 26.2 miles
+          </p>
+          <h2 data-reveal="title">
             Run with her.
             <span className="outline">Remember Lauren.</span>
           </h2>
-          <p>
+          <p data-reveal="up">
             The JustGiving page will be linked here as soon as fundraising
             opens.
           </p>
-          <span className="button button--disabled" aria-disabled="true">
+          <span
+            className="button button--disabled"
+            aria-disabled="true"
+            data-reveal="up"
+          >
             Donation link coming soon
           </span>
         </section>
