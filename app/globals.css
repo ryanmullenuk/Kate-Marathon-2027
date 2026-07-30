@@ -794,6 +794,95 @@ img {
   margin: 1.7rem 0;
 }
 
+.why__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  position: relative;
+  z-index: 2;
+}
+
+.why__stats-topline {
+  align-items: center;
+  background: var(--ink);
+  color: var(--cream);
+  display: flex;
+  font-size: 0.68rem;
+  font-weight: 900;
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  letter-spacing: 0.13em;
+  padding: 1.2rem var(--page-padding);
+  text-transform: uppercase;
+}
+
+.why__stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: clamp(17rem, 28vw, 27rem);
+  overflow: hidden;
+  padding: clamp(2.25rem, 5vw, 5.5rem) var(--page-padding)
+    clamp(2.4rem, 4vw, 4.5rem);
+  position: relative;
+}
+
+.why__stat:nth-of-type(even) {
+  transition-delay: 120ms;
+}
+
+.why__stat::after {
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: "";
+  height: clamp(9rem, 20vw, 20rem);
+  opacity: 0.08;
+  position: absolute;
+  right: clamp(-5rem, -4vw, -2rem);
+  top: clamp(-5rem, -4vw, -2rem);
+  width: clamp(9rem, 20vw, 20rem);
+}
+
+.why__stat strong {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-size: clamp(4.5rem, 9vw, 10rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.78;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.why__stat p {
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  font-weight: 600;
+  line-height: 1.45;
+  margin: clamp(3rem, 7vw, 7rem) 0 0;
+  max-width: 34rem;
+  position: relative;
+  z-index: 1;
+}
+
+.why__stat--purple {
+  background: var(--purple);
+  color: var(--white);
+}
+
+.why__stat--green {
+  background: var(--green-dark);
+  color: var(--cream);
+}
+
+.why__stat--coral {
+  background: var(--coral);
+  color: var(--ink);
+}
+
+.why__stat--pink {
+  background: var(--pink);
+  color: var(--ink);
+}
+
 .lauren {
   background: var(--purple);
   color: var(--white);
@@ -1786,6 +1875,29 @@ footer > a {
   }
 
   .why__copy {
+    margin-top: 4rem;
+  }
+
+  .why__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .why__stats-topline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .why__stat {
+    min-height: 18rem;
+    padding: 2.5rem var(--page-padding);
+  }
+
+  .why__stat strong {
+    font-size: clamp(5rem, 25vw, 8rem);
+  }
+
+  .why__stat p {
     margin-top: 4rem;
   }
 
