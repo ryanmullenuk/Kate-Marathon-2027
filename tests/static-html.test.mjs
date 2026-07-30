@@ -35,6 +35,15 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   assert.match(html, /manifest\.webmanifest/i);
   assert.match(html, /aria-label="Visit the Young Epilepsy website"/i);
   assert.match(html, /class="polaroid-gallery"/i);
+  assert.match(html, /lauren-friends-black-white\.jpeg/i);
+  assert.match(html, /lauren-friends-evening\.jpeg/i);
+  assert.match(html, /lauren-seaside-selfie\.jpeg/i);
+  assert.match(html, /lauren-travel-bench\.jpeg/i);
+  assert.match(html, /lauren-friends-dinner\.jpeg/i);
+  assert.match(
+    html,
+    /Lauren sitting on a rock looking across the mountains at sunset/i,
+  );
   assert.match(html, /Full of life\. Full of joy\./i);
   assert.match(html, /2 May 2023/i);
   assert.match(html, /Forever in our hearts\. Shine brightly\./i);
