@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { marathonRoute } from "./marathon-route";
 
 const DONATION_URL =
-  "https://donate.justgiving.com/page/kateruns27/donation-amount";
+  "https://www.justgiving.com/page/kateruns27";
 const FUNDRAISING_TARGET = 3000;
 const AMOUNT_RAISED: number = 0;
 const TRAINER_COUNT = 10;
@@ -496,8 +496,8 @@ export default function Home() {
             >
               <div className="polaroid__photo polaroid__photo--portrait">
                 <Image
-                  src="/lauren-portrait.jpeg"
-                  alt="Lauren smiling by a window"
+                  src="/lauren-floral-wall.jpg"
+                  alt="Lauren smiling in a pink dress in front of a flower mural"
                   fill
                   sizes="(max-width: 760px) 70vw, 19vw"
                 />
@@ -534,8 +534,8 @@ export default function Home() {
             >
               <div className="polaroid__photo polaroid__photo--portrait">
                 <Image
-                  src="/lauren-summer.jpeg"
-                  alt="Lauren smiling with flowers by the water"
+                  src="/lauren-rio-view.jpg"
+                  alt="Lauren smiling above Rio de Janeiro at sunset"
                   fill
                   sizes="(max-width: 760px) 55vw, 15vw"
                 />
@@ -550,10 +550,10 @@ export default function Home() {
                 she met.
               </p>
               <p>
-                Lauren was lost suddenly on 2 May 2023. The shock reached far
-                beyond one place, leaving family and friends around the world
-                trying to understand life without her. The impact was profound
-                because the love for her was so great.
+                Lauren passed away suddenly on 2nd May 2023. The shock reached
+                far beyond one place, leaving family and friends around the
+                world trying to understand life without her. The impact was
+                profound because the love for her was so great.
               </p>
               <p>
                 What remains is the way Lauren lived: travelling, seeking out

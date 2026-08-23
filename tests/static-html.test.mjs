@@ -10,7 +10,7 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   const html = await exportedPage();
   const donationLinks =
     html.match(
-      /href="https:\/\/donate\.justgiving\.com\/page\/kateruns27\/donation-amount"/gi,
+      /href="https:\/\/www\.justgiving\.com\/page\/kateruns27"/gi,
     ) ?? [];
 
   assert.match(
@@ -54,7 +54,10 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
     /Lauren sitting on a rock looking across the mountains at sunset/i,
   );
   assert.match(html, /Full of life\. Full of joy\./i);
-  assert.match(html, /2 May 2023/i);
+  assert.match(html, /passed away suddenly on 2nd May 2023/i);
+  assert.match(html, /lauren-floral-wall\.jpg/i);
+  assert.match(html, /lauren-rio-view\.jpg/i);
+  assert.doesNotMatch(html, /donate\.justgiving\.com\/page\/kateruns27/i);
   assert.match(html, /Forever in our hearts\. Shine brightly\./i);
   assert.match(html, /Clever, independent, kind and full of joy\./i);
   assert.match(html, /She made amazing friends wherever she went\./i);
