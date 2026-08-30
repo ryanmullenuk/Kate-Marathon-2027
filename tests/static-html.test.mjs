@@ -46,7 +46,7 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   assert.match(html, /class="polaroid-gallery"/i);
   assert.match(html, /lauren-friends-black-white\.jpeg/i);
   assert.match(html, /lauren-friends-evening\.jpeg/i);
-  assert.match(html, /lauren-seaside-selfie\.jpeg/i);
+  assert.match(html, /lauren-friends-group-selfie\.jpg/i);
   assert.match(html, /lauren-travel-bench\.jpeg/i);
   assert.match(html, /lauren-friends-dinner\.jpeg/i);
   assert.match(

@@ -625,8 +625,8 @@ export default function Home() {
             >
               <div className="polaroid__photo polaroid__photo--square">
                 <Image
-                  src="/lauren-seaside-selfie.jpeg"
-                  alt="Lauren smiling with a friend beside the sea"
+                  src="/lauren-friends-group-selfie.jpg"
+                  alt="Lauren smiling with friends in a group selfie"
                   fill
                   sizes="(max-width: 760px) 72vw, 25vw"
                 />
