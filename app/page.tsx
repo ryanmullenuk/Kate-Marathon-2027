@@ -7,10 +7,51 @@ import { marathonRoute } from "./marathon-route";
 const DONATION_URL =
   "https://www.justgiving.com/page/kateruns27";
 const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED: number = 235;
+const AMOUNT_RAISED: number = 680;
 const TRAINER_COUNT = 10;
 
 const SUPPORTER_MESSAGES = [
+  {
+    name: "Stewart and Trish",
+    amount: "£200",
+    message: "Thank you Kate for this wonderful gesture",
+  },
+  {
+    name: "Will Szumski",
+    amount: "£25",
+    message: "Good luck, it's a great cause.",
+  },
+  {
+    name: "Isobel Hawkins",
+    amount: "£10",
+    message: "No message left",
+  },
+  {
+    name: "Chris Cowan",
+    amount: "Private",
+    message:
+      "Great cause and way to celebrate Lauren! Good luck with the winter training and hope there’s a bottle of champagne at the finish line!",
+  },
+  {
+    name: "Sammy W",
+    amount: "£20",
+    message: "Just keep running!! You will smash it Kate xx",
+  },
+  {
+    name: "Zoe C",
+    amount: "Private",
+    message: "💪",
+  },
+  {
+    name: "From Emma Harvey and family",
+    amount: "Private",
+    message: "Good luck Kate xx",
+  },
+  {
+    name: "Jess A-S",
+    amount: "£20",
+    message: "Good luck Kate!",
+  },
   {
     name: "Mum and Dad",
     amount: "£200",
@@ -336,7 +377,10 @@ function SupporterTicker() {
     >
       <div className="supporter-ticker__heading">
         <span>Recent JustGiving support</span>
-        <span>5 donations · £235 raised</span>
+        <span>
+          {SUPPORTER_MESSAGES.length} donations · £
+          {AMOUNT_RAISED.toLocaleString("en-GB")} raised
+        </span>
       </div>
       <div className="supporter-ticker__viewport">
         <div className="supporter-ticker__track">
