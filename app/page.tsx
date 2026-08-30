@@ -7,8 +7,38 @@ import { marathonRoute } from "./marathon-route";
 const DONATION_URL =
   "https://www.justgiving.com/page/kateruns27";
 const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED: number = 0;
+const AMOUNT_RAISED: number = 235;
 const TRAINER_COUNT = 10;
+
+const SUPPORTER_MESSAGES = [
+  {
+    name: "Mum and Dad",
+    amount: "£200",
+    message: "So proud of you Kate xxx",
+  },
+  {
+    name: "Gary Flockton",
+    amount: "£10",
+    message: "Hope your faster than Ryan is getting a round in!",
+  },
+  {
+    name: "Rachel & Kev",
+    amount: "£10",
+    message:
+      "Such an amazing cause in memory of your beautiful Lauren ❤️ Best of luck xxx",
+  },
+  {
+    name: "Jenna Underwood",
+    amount: "£10",
+    message: "Your smash it! Lauren would be proud of you! Love ya ❤️",
+  },
+  {
+    name: "JustGiving",
+    amount: "£5",
+    message:
+      "You are doing something amazing. This donation is our way of helping you take that first step. Keep going - you are making a real difference and we'll be cheering you on all the way! From all of us at JustGiving.",
+  },
+] as const;
 
 function ScrollMotion() {
   useEffect(() => {
@@ -227,6 +257,7 @@ function TrainerTracker() {
     1,
     Math.max(0, AMOUNT_RAISED / FUNDRAISING_TARGET),
   );
+  const displayedPercent = Math.floor(progress * 100);
   const trainerProgress = progress * TRAINER_COUNT;
   const trainers = useMemo(
     () =>
@@ -239,7 +270,7 @@ function TrainerTracker() {
   return (
     <div
       className="tracker"
-      aria-label="Fundraising progress"
+      aria-label={`Fundraising progress: £${AMOUNT_RAISED} raised, ${displayedPercent}% of the £${FUNDRAISING_TARGET} goal`}
       data-reveal="up"
     >
       <div className="tracker__numbers">
@@ -250,6 +281,9 @@ function TrainerTracker() {
               ? "Launching soon"
               : `£${AMOUNT_RAISED.toLocaleString("en-GB")}`}
           </strong>
+          <span className="tracker__percentage">
+            {displayedPercent}% raised
+          </span>
         </div>
         <div className="tracker__target">
           <span>Kate&apos;s goal</span>
@@ -276,6 +310,45 @@ function TrainerTracker() {
         <span>£3,000</span>
       </div>
     </div>
+  );
+}
+
+function SupporterTicker() {
+  const messageCards = (copy: "primary" | "duplicate") =>
+    SUPPORTER_MESSAGES.map((supporter, index) => (
+      <article
+        className="supporter-ticker__card"
+        key={`${copy}-${supporter.name}-${index}`}
+      >
+        <div className="supporter-ticker__meta">
+          <strong>{supporter.name}</strong>
+          <span>{supporter.amount}</span>
+        </div>
+        <p>{supporter.message}</p>
+      </article>
+    ));
+
+  return (
+    <section
+      className="supporter-ticker"
+      aria-label="Messages from supporters on JustGiving"
+      data-reveal="up"
+    >
+      <div className="supporter-ticker__heading">
+        <span>Recent JustGiving support</span>
+        <span>5 donations · £235 raised</span>
+      </div>
+      <div className="supporter-ticker__viewport">
+        <div className="supporter-ticker__track">
+          <div className="supporter-ticker__set">
+            {messageCards("primary")}
+          </div>
+          <div className="supporter-ticker__set" aria-hidden="true">
+            {messageCards("duplicate")}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -687,9 +760,10 @@ export default function Home() {
             </h2>
           </div>
           <TrainerTracker />
+          <SupporterTicker />
           <div className="goal__note" data-reveal="up">
             <p>
-              The tracker will be updated as donations arrive. Ten trainers,
+              The tracker is updated as donations arrive. Ten trainers,
               £300 each, all the way to the finish line.
             </p>
             <a
