@@ -7,10 +7,25 @@ import { marathonRoute } from "./marathon-route";
 const DONATION_URL =
   "https://www.justgiving.com/page/kateruns27";
 const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED: number = 810;
+const AMOUNT_RAISED: number = 960;
 const TRAINER_COUNT = 10;
-
 const SUPPORTER_MESSAGES = [
+  {
+    name: "Jane and Iain",
+    amount: "£50",
+    message: "No message left",
+  },
+  {
+    name: "Mike Szumski",
+    amount: "£50",
+    message: "Good luck, we're all rooting for you. Lauren would be proud x",
+  },
+  {
+    name: "Doug and family",
+    amount: "£50",
+    message:
+      "Thank you, it means a lot. I am sure Lauren is smiling about it somewhere. Good luck from all of us!",
+  },
   {
     name: "Laura Baker",
     amount: "£10",
