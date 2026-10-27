@@ -7,9 +7,30 @@ import { marathonRoute } from "./marathon-route";
 const DONATION_URL =
   "https://www.justgiving.com/page/kateruns27";
 const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED: number = 960;
+const AMOUNT_RAISED: number = 1335;
 const TRAINER_COUNT = 10;
 const SUPPORTER_MESSAGES = [
+  {
+    name: "Dynamo Gymnastics",
+    amount: "£305",
+    message:
+      "Wear Purple to Gymnastics Week 2026. From everyone at Dynamo Gymnastics, Southampton.",
+  },
+  {
+    name: "Lorraine",
+    amount: "£30",
+    message: "Go Kate great cause",
+  },
+  {
+    name: "Molly, Sam, Flo and Mae",
+    amount: "£30",
+    message: "♥️",
+  },
+  {
+    name: "Dani Seton",
+    amount: "£10",
+    message: "Goo you kate, you will be amazing and an incredible cause",
+  },
   {
     name: "Jane and Iain",
     amount: "£50",
