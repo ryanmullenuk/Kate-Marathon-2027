@@ -45,11 +45,15 @@ test("exports the Kate Runs fundraising page for GitHub Pages", async () => {
   assert.match(html, /support they need to take part fully at school/i);
   assert.match(html, /class="polaroid-gallery"/i);
   
-  assert.match(html, /£1,335/);
+  assert.match(html, /£1,375/);
   
-  assert.match(html, /44(?:<!-- -->)?% raised/i);
+  assert.match(html, /45(?:<!-- -->)?% raised/i);
   assert.match(html, /class="supporter-ticker"/i);
-  assert.match(html, /26(?:<!-- -->)? donations/i);
+  assert.match(html, /28(?:<!-- -->)? donations/i);
+  assert.match(html, /Cheryl/i);
+  assert.match(html, /Great achievement and for an amazing cause/i);
+  assert.match(html, /Kels/i);
+  assert.match(html, /Lauren will be shining down on you/i);
   assert.match(html, /Dynamo Gymnastics/i);
   assert.match(html, /Wear Purple to Gymnastics Week 2026/i);
   assert.match(html, /Lorraine/i);
