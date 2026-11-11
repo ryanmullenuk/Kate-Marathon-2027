@@ -7,9 +7,20 @@ import { marathonRoute } from "./marathon-route";
 const DONATION_URL =
   "https://www.justgiving.com/page/kateruns27";
 const FUNDRAISING_TARGET = 3000;
-const AMOUNT_RAISED: number = 1335;
+const AMOUNT_RAISED: number = 1375;
 const TRAINER_COUNT = 10;
 const SUPPORTER_MESSAGES = [
+  {
+    name: "Cheryl",
+    amount: "Private",
+    message: "You’ll smash this Kate! Great achievement and for an amazing cause xxx",
+  },
+  {
+    name: "Kels",
+    amount: "£15",
+    message:
+      "Super proud of you ❤️ go smash it like you always do ❤️ Lauren will be shining down on you xx",
+  },
   {
     name: "Dynamo Gymnastics",
     amount: "£305",
